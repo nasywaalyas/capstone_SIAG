@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  DOKTER
+  PASIEN
+}
+
+enum StatusAntrian {
+  MENUNGGU
+  DIVERIFIKASI
+  DIPANGGIL
+  DIPERIKSA
+  SELESAI
+  DIBATALKAN
+}
+
+model User {
+  id String @id @default(cuid())
+  nama String
+  email String @unique
+  password String
+  role Role
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profilDokter Dokter?
+  profilPasien Pasien?
+}
+
+model Dokter {
+  id String @id @default(cuid())
+  userId String @unique
+  spesialisasi String?
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  antrian Antrian[]
+}
+
+model Pasien {
+  id String @id @default(cuid())
+  userId String @unique
+  noTelpon String?
+  alamat String?
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  antrian Antrian[]
+}
+
+model Antrian {
+  id String @id @default(cuid())
+  pasienId String
+  dokterId String?
+  tanggal DateTime @db.Date
+  nomorAntrian Int
+  keluhan String?
+  status StatusAntrian @default(MENUNGGU)
+  createdAt DateTime @default(now())
+
+  pasien Pasien @relation(fields: [pasienId], references: [id])
+  dokter Dokter? @relation(fields: [dokterId], references: [id])
+  pemeriksaan Pemeriksaan?
+
+  @@unique([tanggal, nomorAntrian])
+}
+
+model Pemeriksaan {
+  id String @id @default(cuid())
+  antrianId String @unique
+  diagnosa String?
+  catatan String?
+  tanggalPeriksa DateTime @default(now())
+
+  antrian Antrian @relation(fields: [antrianId], references: [id])
+}
