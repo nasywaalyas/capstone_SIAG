@@ -24,3 +24,183 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* HALAMAN REGISTRASI */
+.register-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  background: #f0f7f6;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* KARTU FORMULIR */
+.register-card {
+  width: 100%;
+  max-width: 460px;
+  padding: 36px;
+  background: #ffffff;
+  border: 1px solid #e0eae8;
+  border-radius: 16px;
+  box-shadow: 0 10px 35px rgba(20, 70, 65, 0.08);
+}
+
+/* JUDUL REGISTRASI */
+.register-heading {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.register-icon {
+  width: 54px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: #d9efeb;
+  color: #087e70;
+  font-size: 28px;
+}
+
+.register-heading h1 {
+  margin: 0 0 8px;
+  color: #183b39;
+  font-size: 26px;
+}
+
+.register-heading p {
+  margin: 0;
+  color: #71817f;
+  font-size: 14px;
+}
+
+/* INPUT FORMULIR */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  color: #263d3b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.form-group input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid #d6e1df;
+  border-radius: 8px;
+  outline: none;
+  background: #ffffff;
+  color: #263d3b;
+  font-size: 14px;
+}
+
+.form-group input:focus {
+  border-color: #0d9488;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+}
+
+.form-group input::placeholder {
+  color: #a0aeac;
+}
+
+/* INPUT PASSWORD DAN TOMBOL LIHAT PASSWORD */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-wrapper input {
+  padding-right: 48px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: none;
+  background: transparent;
+  color: #526b68;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.password-toggle:hover {
+  color: #087e70;
+}
+
+.password-toggle:focus-visible {
+  outline: 2px solid #087e70;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* TOMBOL DAFTAR */
+.register-button {
+  width: 100%;
+  padding: 13px;
+  margin-top: 4px;
+  border: none;
+  border-radius: 8px;
+  background: #087e70;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.register-button:hover {
+  background: #06685e;
+}
+
+/* PESAN VALIDASI */
+.register-message {
+  margin: 0 0 16px;
+  color: #087e70;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* LINK LOGIN */
+.register-footer {
+  margin: 24px 0 0;
+  text-align: center;
+  color: #71817f;
+  font-size: 14px;
+}
+
+.register-footer a {
+  color: #087e70;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.register-footer a:hover {
+  text-decoration: underline;
+}
+
+/* TAMPILAN HP */
+@media (max-width: 480px) {
+  .register-card {
+    padding: 26px 20px;
+  }
+
+  .register-heading h1 {
+    font-size: 23px;
+  }
+}
