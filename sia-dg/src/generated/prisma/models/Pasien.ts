@@ -27,22 +27,34 @@ export type AggregatePasien = {
 export type PasienMinAggregateOutputType = {
   id: string | null
   userId: string | null
-  noTelpon: string | null
+  nik: string | null
   alamat: string | null
+  tempatLahir: string | null
+  tanggalLahir: Date | null
+  jenisKelamin: $Enums.JenisKelamin | null
+  noTelp: string | null
 }
 
 export type PasienMaxAggregateOutputType = {
   id: string | null
   userId: string | null
-  noTelpon: string | null
+  nik: string | null
   alamat: string | null
+  tempatLahir: string | null
+  tanggalLahir: Date | null
+  jenisKelamin: $Enums.JenisKelamin | null
+  noTelp: string | null
 }
 
 export type PasienCountAggregateOutputType = {
   id: number
   userId: number
-  noTelpon: number
+  nik: number
   alamat: number
+  tempatLahir: number
+  tanggalLahir: number
+  jenisKelamin: number
+  noTelp: number
   _all: number
 }
 
@@ -50,22 +62,34 @@ export type PasienCountAggregateOutputType = {
 export type PasienMinAggregateInputType = {
   id?: true
   userId?: true
-  noTelpon?: true
+  nik?: true
   alamat?: true
+  tempatLahir?: true
+  tanggalLahir?: true
+  jenisKelamin?: true
+  noTelp?: true
 }
 
 export type PasienMaxAggregateInputType = {
   id?: true
   userId?: true
-  noTelpon?: true
+  nik?: true
   alamat?: true
+  tempatLahir?: true
+  tanggalLahir?: true
+  jenisKelamin?: true
+  noTelp?: true
 }
 
 export type PasienCountAggregateInputType = {
   id?: true
   userId?: true
-  noTelpon?: true
+  nik?: true
   alamat?: true
+  tempatLahir?: true
+  tanggalLahir?: true
+  jenisKelamin?: true
+  noTelp?: true
   _all?: true
 }
 
@@ -144,8 +168,12 @@ export type PasienGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 export type PasienGroupByOutputType = {
   id: string
   userId: string
-  noTelpon: string | null
-  alamat: string | null
+  nik: string
+  alamat: string
+  tempatLahir: string
+  tanggalLahir: Date
+  jenisKelamin: $Enums.JenisKelamin
+  noTelp: string
   _count: PasienCountAggregateOutputType | null
   _min: PasienMinAggregateOutputType | null
   _max: PasienMaxAggregateOutputType | null
@@ -172,8 +200,12 @@ export type PasienWhereInput = {
   NOT?: Prisma.PasienWhereInput | Prisma.PasienWhereInput[]
   id?: Prisma.StringFilter<"Pasien"> | string
   userId?: Prisma.StringFilter<"Pasien"> | string
-  noTelpon?: Prisma.StringNullableFilter<"Pasien"> | string | null
-  alamat?: Prisma.StringNullableFilter<"Pasien"> | string | null
+  nik?: Prisma.StringFilter<"Pasien"> | string
+  alamat?: Prisma.StringFilter<"Pasien"> | string
+  tempatLahir?: Prisma.StringFilter<"Pasien"> | string
+  tanggalLahir?: Prisma.DateTimeFilter<"Pasien"> | Date | string
+  jenisKelamin?: Prisma.EnumJenisKelaminFilter<"Pasien"> | $Enums.JenisKelamin
+  noTelp?: Prisma.StringFilter<"Pasien"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   antrian?: Prisma.AntrianListRelationFilter
 }
@@ -181,8 +213,12 @@ export type PasienWhereInput = {
 export type PasienOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  noTelpon?: Prisma.SortOrderInput | Prisma.SortOrder
-  alamat?: Prisma.SortOrderInput | Prisma.SortOrder
+  nik?: Prisma.SortOrder
+  alamat?: Prisma.SortOrder
+  tempatLahir?: Prisma.SortOrder
+  tanggalLahir?: Prisma.SortOrder
+  jenisKelamin?: Prisma.SortOrder
+  noTelp?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   antrian?: Prisma.AntrianOrderByRelationAggregateInput
 }
@@ -190,20 +226,28 @@ export type PasienOrderByWithRelationInput = {
 export type PasienWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   userId?: string
+  nik?: string
   AND?: Prisma.PasienWhereInput | Prisma.PasienWhereInput[]
   OR?: Prisma.PasienWhereInput[]
   NOT?: Prisma.PasienWhereInput | Prisma.PasienWhereInput[]
-  noTelpon?: Prisma.StringNullableFilter<"Pasien"> | string | null
-  alamat?: Prisma.StringNullableFilter<"Pasien"> | string | null
+  alamat?: Prisma.StringFilter<"Pasien"> | string
+  tempatLahir?: Prisma.StringFilter<"Pasien"> | string
+  tanggalLahir?: Prisma.DateTimeFilter<"Pasien"> | Date | string
+  jenisKelamin?: Prisma.EnumJenisKelaminFilter<"Pasien"> | $Enums.JenisKelamin
+  noTelp?: Prisma.StringFilter<"Pasien"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   antrian?: Prisma.AntrianListRelationFilter
-}, "id" | "userId">
+}, "id" | "userId" | "nik">
 
 export type PasienOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  noTelpon?: Prisma.SortOrderInput | Prisma.SortOrder
-  alamat?: Prisma.SortOrderInput | Prisma.SortOrder
+  nik?: Prisma.SortOrder
+  alamat?: Prisma.SortOrder
+  tempatLahir?: Prisma.SortOrder
+  tanggalLahir?: Prisma.SortOrder
+  jenisKelamin?: Prisma.SortOrder
+  noTelp?: Prisma.SortOrder
   _count?: Prisma.PasienCountOrderByAggregateInput
   _max?: Prisma.PasienMaxOrderByAggregateInput
   _min?: Prisma.PasienMinOrderByAggregateInput
@@ -215,14 +259,22 @@ export type PasienScalarWhereWithAggregatesInput = {
   NOT?: Prisma.PasienScalarWhereWithAggregatesInput | Prisma.PasienScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Pasien"> | string
   userId?: Prisma.StringWithAggregatesFilter<"Pasien"> | string
-  noTelpon?: Prisma.StringNullableWithAggregatesFilter<"Pasien"> | string | null
-  alamat?: Prisma.StringNullableWithAggregatesFilter<"Pasien"> | string | null
+  nik?: Prisma.StringWithAggregatesFilter<"Pasien"> | string
+  alamat?: Prisma.StringWithAggregatesFilter<"Pasien"> | string
+  tempatLahir?: Prisma.StringWithAggregatesFilter<"Pasien"> | string
+  tanggalLahir?: Prisma.DateTimeWithAggregatesFilter<"Pasien"> | Date | string
+  jenisKelamin?: Prisma.EnumJenisKelaminWithAggregatesFilter<"Pasien"> | $Enums.JenisKelamin
+  noTelp?: Prisma.StringWithAggregatesFilter<"Pasien"> | string
 }
 
 export type PasienCreateInput = {
   id?: string
-  noTelpon?: string | null
-  alamat?: string | null
+  nik: string
+  alamat: string
+  tempatLahir: string
+  tanggalLahir: Date | string
+  jenisKelamin: $Enums.JenisKelamin
+  noTelp: string
   user: Prisma.UserCreateNestedOneWithoutProfilPasienInput
   antrian?: Prisma.AntrianCreateNestedManyWithoutPasienInput
 }
@@ -230,15 +282,23 @@ export type PasienCreateInput = {
 export type PasienUncheckedCreateInput = {
   id?: string
   userId: string
-  noTelpon?: string | null
-  alamat?: string | null
+  nik: string
+  alamat: string
+  tempatLahir: string
+  tanggalLahir: Date | string
+  jenisKelamin: $Enums.JenisKelamin
+  noTelp: string
   antrian?: Prisma.AntrianUncheckedCreateNestedManyWithoutPasienInput
 }
 
 export type PasienUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  noTelpon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  alamat?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nik?: Prisma.StringFieldUpdateOperationsInput | string
+  alamat?: Prisma.StringFieldUpdateOperationsInput | string
+  tempatLahir?: Prisma.StringFieldUpdateOperationsInput | string
+  tanggalLahir?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  jenisKelamin?: Prisma.EnumJenisKelaminFieldUpdateOperationsInput | $Enums.JenisKelamin
+  noTelp?: Prisma.StringFieldUpdateOperationsInput | string
   user?: Prisma.UserUpdateOneRequiredWithoutProfilPasienNestedInput
   antrian?: Prisma.AntrianUpdateManyWithoutPasienNestedInput
 }
@@ -246,29 +306,45 @@ export type PasienUpdateInput = {
 export type PasienUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  noTelpon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  alamat?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nik?: Prisma.StringFieldUpdateOperationsInput | string
+  alamat?: Prisma.StringFieldUpdateOperationsInput | string
+  tempatLahir?: Prisma.StringFieldUpdateOperationsInput | string
+  tanggalLahir?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  jenisKelamin?: Prisma.EnumJenisKelaminFieldUpdateOperationsInput | $Enums.JenisKelamin
+  noTelp?: Prisma.StringFieldUpdateOperationsInput | string
   antrian?: Prisma.AntrianUncheckedUpdateManyWithoutPasienNestedInput
 }
 
 export type PasienCreateManyInput = {
   id?: string
   userId: string
-  noTelpon?: string | null
-  alamat?: string | null
+  nik: string
+  alamat: string
+  tempatLahir: string
+  tanggalLahir: Date | string
+  jenisKelamin: $Enums.JenisKelamin
+  noTelp: string
 }
 
 export type PasienUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  noTelpon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  alamat?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nik?: Prisma.StringFieldUpdateOperationsInput | string
+  alamat?: Prisma.StringFieldUpdateOperationsInput | string
+  tempatLahir?: Prisma.StringFieldUpdateOperationsInput | string
+  tanggalLahir?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  jenisKelamin?: Prisma.EnumJenisKelaminFieldUpdateOperationsInput | $Enums.JenisKelamin
+  noTelp?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type PasienUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  noTelpon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  alamat?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nik?: Prisma.StringFieldUpdateOperationsInput | string
+  alamat?: Prisma.StringFieldUpdateOperationsInput | string
+  tempatLahir?: Prisma.StringFieldUpdateOperationsInput | string
+  tanggalLahir?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  jenisKelamin?: Prisma.EnumJenisKelaminFieldUpdateOperationsInput | $Enums.JenisKelamin
+  noTelp?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type PasienNullableScalarRelationFilter = {
@@ -279,22 +355,34 @@ export type PasienNullableScalarRelationFilter = {
 export type PasienCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  noTelpon?: Prisma.SortOrder
+  nik?: Prisma.SortOrder
   alamat?: Prisma.SortOrder
+  tempatLahir?: Prisma.SortOrder
+  tanggalLahir?: Prisma.SortOrder
+  jenisKelamin?: Prisma.SortOrder
+  noTelp?: Prisma.SortOrder
 }
 
 export type PasienMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  noTelpon?: Prisma.SortOrder
+  nik?: Prisma.SortOrder
   alamat?: Prisma.SortOrder
+  tempatLahir?: Prisma.SortOrder
+  tanggalLahir?: Prisma.SortOrder
+  jenisKelamin?: Prisma.SortOrder
+  noTelp?: Prisma.SortOrder
 }
 
 export type PasienMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  noTelpon?: Prisma.SortOrder
+  nik?: Prisma.SortOrder
   alamat?: Prisma.SortOrder
+  tempatLahir?: Prisma.SortOrder
+  tanggalLahir?: Prisma.SortOrder
+  jenisKelamin?: Prisma.SortOrder
+  noTelp?: Prisma.SortOrder
 }
 
 export type PasienScalarRelationFilter = {
@@ -334,6 +422,10 @@ export type PasienUncheckedUpdateOneWithoutUserNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.PasienUpdateToOneWithWhereWithoutUserInput, Prisma.PasienUpdateWithoutUserInput>, Prisma.PasienUncheckedUpdateWithoutUserInput>
 }
 
+export type EnumJenisKelaminFieldUpdateOperationsInput = {
+  set?: $Enums.JenisKelamin
+}
+
 export type PasienCreateNestedOneWithoutAntrianInput = {
   create?: Prisma.XOR<Prisma.PasienCreateWithoutAntrianInput, Prisma.PasienUncheckedCreateWithoutAntrianInput>
   connectOrCreate?: Prisma.PasienCreateOrConnectWithoutAntrianInput
@@ -350,15 +442,23 @@ export type PasienUpdateOneRequiredWithoutAntrianNestedInput = {
 
 export type PasienCreateWithoutUserInput = {
   id?: string
-  noTelpon?: string | null
-  alamat?: string | null
+  nik: string
+  alamat: string
+  tempatLahir: string
+  tanggalLahir: Date | string
+  jenisKelamin: $Enums.JenisKelamin
+  noTelp: string
   antrian?: Prisma.AntrianCreateNestedManyWithoutPasienInput
 }
 
 export type PasienUncheckedCreateWithoutUserInput = {
   id?: string
-  noTelpon?: string | null
-  alamat?: string | null
+  nik: string
+  alamat: string
+  tempatLahir: string
+  tanggalLahir: Date | string
+  jenisKelamin: $Enums.JenisKelamin
+  noTelp: string
   antrian?: Prisma.AntrianUncheckedCreateNestedManyWithoutPasienInput
 }
 
@@ -380,30 +480,46 @@ export type PasienUpdateToOneWithWhereWithoutUserInput = {
 
 export type PasienUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  noTelpon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  alamat?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nik?: Prisma.StringFieldUpdateOperationsInput | string
+  alamat?: Prisma.StringFieldUpdateOperationsInput | string
+  tempatLahir?: Prisma.StringFieldUpdateOperationsInput | string
+  tanggalLahir?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  jenisKelamin?: Prisma.EnumJenisKelaminFieldUpdateOperationsInput | $Enums.JenisKelamin
+  noTelp?: Prisma.StringFieldUpdateOperationsInput | string
   antrian?: Prisma.AntrianUpdateManyWithoutPasienNestedInput
 }
 
 export type PasienUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  noTelpon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  alamat?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nik?: Prisma.StringFieldUpdateOperationsInput | string
+  alamat?: Prisma.StringFieldUpdateOperationsInput | string
+  tempatLahir?: Prisma.StringFieldUpdateOperationsInput | string
+  tanggalLahir?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  jenisKelamin?: Prisma.EnumJenisKelaminFieldUpdateOperationsInput | $Enums.JenisKelamin
+  noTelp?: Prisma.StringFieldUpdateOperationsInput | string
   antrian?: Prisma.AntrianUncheckedUpdateManyWithoutPasienNestedInput
 }
 
 export type PasienCreateWithoutAntrianInput = {
   id?: string
-  noTelpon?: string | null
-  alamat?: string | null
+  nik: string
+  alamat: string
+  tempatLahir: string
+  tanggalLahir: Date | string
+  jenisKelamin: $Enums.JenisKelamin
+  noTelp: string
   user: Prisma.UserCreateNestedOneWithoutProfilPasienInput
 }
 
 export type PasienUncheckedCreateWithoutAntrianInput = {
   id?: string
   userId: string
-  noTelpon?: string | null
-  alamat?: string | null
+  nik: string
+  alamat: string
+  tempatLahir: string
+  tanggalLahir: Date | string
+  jenisKelamin: $Enums.JenisKelamin
+  noTelp: string
 }
 
 export type PasienCreateOrConnectWithoutAntrianInput = {
@@ -424,16 +540,24 @@ export type PasienUpdateToOneWithWhereWithoutAntrianInput = {
 
 export type PasienUpdateWithoutAntrianInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  noTelpon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  alamat?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nik?: Prisma.StringFieldUpdateOperationsInput | string
+  alamat?: Prisma.StringFieldUpdateOperationsInput | string
+  tempatLahir?: Prisma.StringFieldUpdateOperationsInput | string
+  tanggalLahir?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  jenisKelamin?: Prisma.EnumJenisKelaminFieldUpdateOperationsInput | $Enums.JenisKelamin
+  noTelp?: Prisma.StringFieldUpdateOperationsInput | string
   user?: Prisma.UserUpdateOneRequiredWithoutProfilPasienNestedInput
 }
 
 export type PasienUncheckedUpdateWithoutAntrianInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  noTelpon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  alamat?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nik?: Prisma.StringFieldUpdateOperationsInput | string
+  alamat?: Prisma.StringFieldUpdateOperationsInput | string
+  tempatLahir?: Prisma.StringFieldUpdateOperationsInput | string
+  tanggalLahir?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  jenisKelamin?: Prisma.EnumJenisKelaminFieldUpdateOperationsInput | $Enums.JenisKelamin
+  noTelp?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 
@@ -470,8 +594,12 @@ export type PasienCountOutputTypeCountAntrianArgs<ExtArgs extends runtime.Types.
 export type PasienSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
-  noTelpon?: boolean
+  nik?: boolean
   alamat?: boolean
+  tempatLahir?: boolean
+  tanggalLahir?: boolean
+  jenisKelamin?: boolean
+  noTelp?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   antrian?: boolean | Prisma.Pasien$antrianArgs<ExtArgs>
   _count?: boolean | Prisma.PasienCountOutputTypeDefaultArgs<ExtArgs>
@@ -480,27 +608,39 @@ export type PasienSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 export type PasienSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
-  noTelpon?: boolean
+  nik?: boolean
   alamat?: boolean
+  tempatLahir?: boolean
+  tanggalLahir?: boolean
+  jenisKelamin?: boolean
+  noTelp?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pasien"]>
 
 export type PasienSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
-  noTelpon?: boolean
+  nik?: boolean
   alamat?: boolean
+  tempatLahir?: boolean
+  tanggalLahir?: boolean
+  jenisKelamin?: boolean
+  noTelp?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pasien"]>
 
 export type PasienSelectScalar = {
   id?: boolean
   userId?: boolean
-  noTelpon?: boolean
+  nik?: boolean
   alamat?: boolean
+  tempatLahir?: boolean
+  tanggalLahir?: boolean
+  jenisKelamin?: boolean
+  noTelp?: boolean
 }
 
-export type PasienOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "noTelpon" | "alamat", ExtArgs["result"]["pasien"]>
+export type PasienOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "nik" | "alamat" | "tempatLahir" | "tanggalLahir" | "jenisKelamin" | "noTelp", ExtArgs["result"]["pasien"]>
 export type PasienInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   antrian?: boolean | Prisma.Pasien$antrianArgs<ExtArgs>
@@ -522,8 +662,12 @@ export type $PasienPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     userId: string
-    noTelpon: string | null
-    alamat: string | null
+    nik: string
+    alamat: string
+    tempatLahir: string
+    tanggalLahir: Date
+    jenisKelamin: $Enums.JenisKelamin
+    noTelp: string
   }, ExtArgs["result"]["pasien"]>
   composites: {}
 }
@@ -951,8 +1095,12 @@ export interface Prisma__PasienClient<T, Null = never, ExtArgs extends runtime.T
 export interface PasienFieldRefs {
   readonly id: Prisma.FieldRef<"Pasien", 'String'>
   readonly userId: Prisma.FieldRef<"Pasien", 'String'>
-  readonly noTelpon: Prisma.FieldRef<"Pasien", 'String'>
+  readonly nik: Prisma.FieldRef<"Pasien", 'String'>
   readonly alamat: Prisma.FieldRef<"Pasien", 'String'>
+  readonly tempatLahir: Prisma.FieldRef<"Pasien", 'String'>
+  readonly tanggalLahir: Prisma.FieldRef<"Pasien", 'DateTime'>
+  readonly jenisKelamin: Prisma.FieldRef<"Pasien", 'JenisKelamin'>
+  readonly noTelp: Prisma.FieldRef<"Pasien", 'String'>
 }
     
 

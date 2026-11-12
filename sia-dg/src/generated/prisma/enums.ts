@@ -28,3 +28,11 @@ export const StatusAntrian = {
 } as const
 
 export type StatusAntrian = (typeof StatusAntrian)[keyof typeof StatusAntrian]
+
+
+export const JenisKelamin = {
+  LAKI_LAKI: 'LAKI_LAKI',
+  PEREMPUAN: 'PEREMPUAN'
+} as const
+
+export type JenisKelamin = (typeof JenisKelamin)[keyof typeof JenisKelamin]

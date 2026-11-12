@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Suspense } from "react"; // Tambahkan import Suspense
 
 type Queue = {
   number: string;
@@ -51,37 +52,13 @@ function formatTime(date: Date) {
   }).format(date);
 }
 
-function getJakartaDate(offset = 0) {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Jakarta",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(new Date());
-
-  const values = Object.fromEntries(
-    parts.map((part) => [part.type, part.value])
-  );
-
-  const date = new Date(
-    Date.UTC(
-      Number(values.year),
-      Number(values.month) - 1,
-      Number(values.day) + offset,
-      12
-    )
-  );
-
-  return formatDate(date);
-}
-
 function isClinicOpen(date: Date) {
   const hour = Number(
     new Intl.DateTimeFormat("en-GB", {
       timeZone: "Asia/Jakarta",
       hour: "2-digit",
       hourCycle: "h23",
-    }).format(date)
+    }).format(date),
   );
 
   return hour >= 8 && hour < 20;
@@ -90,8 +67,34 @@ function isClinicOpen(date: Date) {
 export default function PatientDashboard() {
   const [now, setNow] = useState<Date | null>(null);
   const [activeTab, setActiveTab] = useState<"today" | "tomorrow">("today");
+  // Tambahkan state untuk tanggal besok
+  const [tomorrowDateStr, setTomorrowDateStr] = useState<string>("Memuat...");
 
   useEffect(() => {
+    // Jalankan logika getJakartaDate di dalam useEffect
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Jakarta",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).formatToParts(new Date());
+
+    const values = Object.fromEntries(
+      parts.map((part) => [part.type, part.value]),
+    );
+
+    const date = new Date(
+      Date.UTC(
+        Number(values.year),
+        Number(values.month) - 1,
+        Number(values.day) + 1, // Offset 1 untuk besok
+        12,
+      ),
+    );
+
+    setTomorrowDateStr(formatDate(date));
+
+    // Update jam
     const updateClock = () => setNow(new Date());
     updateClock();
 
@@ -115,14 +118,11 @@ export default function PatientDashboard() {
         <div className="menuLabel">MENU UTAMA</div>
 
         <nav className="navigation">
-          <Link
-            href="/patient/dashboard"
-            className="navItem navActive"
-          >
+          <Link href="/dashboard" className="navItem navActive">
             <span>▦</span> Dashboard
           </Link>
 
-          <Link href="/patient/appointments" className="navItem">
+          <Link href="/dashboard/appointments" className="navItem">
             <span>▣</span> Reservasi Antrian
           </Link>
 
@@ -169,7 +169,7 @@ export default function PatientDashboard() {
               Pantau antrian, periksa jadwal kunjungan, dan lakukan reservasi
               dengan mudah.
             </p>
-            <Link href="/patient/appointments" className="primaryButton">
+            <Link href="/dashboard/appointments" className="primaryButton">
               + Reservasi Antrian
             </Link>
           </div>
@@ -245,10 +245,7 @@ export default function PatientDashboard() {
                   Anda belum memiliki reservasi untuk{" "}
                   {activeTab === "today" ? "hari ini" : "besok"}.
                 </p>
-                <Link
-                  href="/patient/appointments"
-                  className="secondaryButton"
-                >
+                <Link href="/patient/appointments" className="secondaryButton">
                   Buat Reservasi
                 </Link>
               </div>
@@ -285,8 +282,7 @@ export default function PatientDashboard() {
               <span
                 className="onlineDot"
                 style={{
-                  background:
-                    now && isClinicOpen(now) ? "#36b88d" : "#d97757",
+                  background: now && isClinicOpen(now) ? "#36b88d" : "#d97757",
                 }}
               />
               {now
@@ -306,11 +302,11 @@ export default function PatientDashboard() {
               </div>
             </div>
 
-            <div className="tomorrowDate">{getJakartaDate(1)}</div>
+            <div className="tomorrowDate">{tomorrowDateStr}</div>
 
             <p className="tomorrowDescription">
-              Pastikan Anda datang sesuai jadwal reservasi dan membawa
-              informasi yang diperlukan untuk pemeriksaan.
+              Pastikan Anda datang sesuai jadwal reservasi dan membawa informasi
+              yang diperlukan untuk pemeriksaan.
             </p>
 
             <Link href="/patient/appointments" className="textLink">

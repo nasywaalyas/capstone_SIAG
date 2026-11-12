@@ -1,7 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+// prisma/schema.prisma
 
 generator client {
   provider = "prisma-client"
@@ -27,12 +24,17 @@ enum StatusAntrian {
   DIBATALKAN
 }
 
+enum JenisKelamin {
+  LAKI_LAKI
+  PEREMPUAN
+}
+
 model User {
-  id String @id @default(cuid())
-  nama String
-  email String @unique
-  password String
-  role Role
+  id        String   @id @default(cuid())
+  nama      String
+  username  String   @unique
+  password  String
+  role      Role
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -41,44 +43,49 @@ model User {
 }
 
 model Dokter {
-  id String @id @default(cuid())
-  userId String @unique
+  id           String    @id @default(cuid())
+  userId       String    @unique
   spesialisasi String?
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  antrian Antrian[]
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  antrian      Antrian[]
 }
 
 model Pasien {
-  id String @id @default(cuid())
-  userId String @unique
-  noTelpon String?
-  alamat String?
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String       @id @default(cuid())
+  userId       String       @unique
+  nik          String       @unique
+  alamat       String
+  tempatLahir  String
+  tanggalLahir DateTime     @db.Date
+  jenisKelamin JenisKelamin
+  noTelp       String
+
+  user    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   antrian Antrian[]
 }
 
 model Antrian {
-  id String @id @default(cuid())
-  pasienId String
-  dokterId String?
-  tanggal DateTime @db.Date
+  id           String        @id @default(cuid())
+  pasienId     String
+  dokterId     String?
+  tanggal      DateTime      @db.Date
   nomorAntrian Int
-  keluhan String?
-  status StatusAntrian @default(MENUNGGU)
-  createdAt DateTime @default(now())
+  keluhan      String?
+  status       StatusAntrian @default(MENUNGGU)
+  createdAt    DateTime      @default(now())
 
-  pasien Pasien @relation(fields: [pasienId], references: [id])
-  dokter Dokter? @relation(fields: [dokterId], references: [id])
+  pasien      Pasien       @relation(fields: [pasienId], references: [id])
+  dokter      Dokter?      @relation(fields: [dokterId], references: [id])
   pemeriksaan Pemeriksaan?
 
   @@unique([tanggal, nomorAntrian])
 }
 
 model Pemeriksaan {
-  id String @id @default(cuid())
-  antrianId String @unique
-  diagnosa String?
-  catatan String?
+  id             String   @id @default(cuid())
+  antrianId      String   @unique
+  diagnosa       String?
+  catatan        String?
   tanggalPeriksa DateTime @default(now())
 
   antrian Antrian @relation(fields: [antrianId], references: [id])

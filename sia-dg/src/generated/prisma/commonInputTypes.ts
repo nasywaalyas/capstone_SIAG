@@ -127,6 +127,23 @@ export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedStringNullableFilter<$PrismaModel>
 }
 
+export type EnumJenisKelaminFilter<$PrismaModel = never> = {
+  equals?: $Enums.JenisKelamin | Prisma.EnumJenisKelaminFieldRefInput<$PrismaModel>
+  in?: $Enums.JenisKelamin[] | Prisma.ListEnumJenisKelaminFieldRefInput<$PrismaModel>
+  notIn?: $Enums.JenisKelamin[] | Prisma.ListEnumJenisKelaminFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumJenisKelaminFilter<$PrismaModel> | $Enums.JenisKelamin
+}
+
+export type EnumJenisKelaminWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.JenisKelamin | Prisma.EnumJenisKelaminFieldRefInput<$PrismaModel>
+  in?: $Enums.JenisKelamin[] | Prisma.ListEnumJenisKelaminFieldRefInput<$PrismaModel>
+  notIn?: $Enums.JenisKelamin[] | Prisma.ListEnumJenisKelaminFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumJenisKelaminWithAggregatesFilter<$PrismaModel> | $Enums.JenisKelamin
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumJenisKelaminFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumJenisKelaminFilter<$PrismaModel>
+}
+
 export type IntFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
@@ -295,6 +312,23 @@ export type NestedIntNullableFilter<$PrismaModel = never> = {
   gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
   gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
   not?: Prisma.NestedIntNullableFilter<$PrismaModel> | number | null
+}
+
+export type NestedEnumJenisKelaminFilter<$PrismaModel = never> = {
+  equals?: $Enums.JenisKelamin | Prisma.EnumJenisKelaminFieldRefInput<$PrismaModel>
+  in?: $Enums.JenisKelamin[] | Prisma.ListEnumJenisKelaminFieldRefInput<$PrismaModel>
+  notIn?: $Enums.JenisKelamin[] | Prisma.ListEnumJenisKelaminFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumJenisKelaminFilter<$PrismaModel> | $Enums.JenisKelamin
+}
+
+export type NestedEnumJenisKelaminWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.JenisKelamin | Prisma.EnumJenisKelaminFieldRefInput<$PrismaModel>
+  in?: $Enums.JenisKelamin[] | Prisma.ListEnumJenisKelaminFieldRefInput<$PrismaModel>
+  notIn?: $Enums.JenisKelamin[] | Prisma.ListEnumJenisKelaminFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumJenisKelaminWithAggregatesFilter<$PrismaModel> | $Enums.JenisKelamin
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumJenisKelaminFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumJenisKelaminFilter<$PrismaModel>
 }
 
 export type NestedEnumStatusAntrianFilter<$PrismaModel = never> = {

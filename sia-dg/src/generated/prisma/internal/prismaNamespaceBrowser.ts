@@ -77,7 +77,7 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 export const UserScalarFieldEnum = {
   id: 'id',
   nama: 'nama',
-  email: 'email',
+  username: 'username',
   password: 'password',
   role: 'role',
   createdAt: 'createdAt',
@@ -99,8 +99,12 @@ export type DokterScalarFieldEnum = (typeof DokterScalarFieldEnum)[keyof typeof 
 export const PasienScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  noTelpon: 'noTelpon',
-  alamat: 'alamat'
+  nik: 'nik',
+  alamat: 'alamat',
+  tempatLahir: 'tempatLahir',
+  tanggalLahir: 'tanggalLahir',
+  jenisKelamin: 'jenisKelamin',
+  noTelp: 'noTelp'
 } as const
 
 export type PasienScalarFieldEnum = (typeof PasienScalarFieldEnum)[keyof typeof PasienScalarFieldEnum]
