@@ -50,7 +50,9 @@ function getJakartaDateInput() {
     day: "2-digit",
   }).formatToParts(new Date());
 
-  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  const values = Object.fromEntries(
+    parts.map((part) => [part.type, part.value]),
+  );
   return `${values.year}-${values.month}-${values.day}`;
 }
 
@@ -71,8 +73,11 @@ export default function PatientAppointmentsPage() {
   const [type, setType] = useState("");
   const [otherDetails, setOtherDetails] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [year, setYear] = useState<number | null>(null);
 
   useEffect(() => {
+    setYear(new Date().getFullYear());
+
     const updateClock = () => {
       setToday(getJakartaDateInput());
       setClock(formatJakartaTime(new Date()));
@@ -95,7 +100,7 @@ export default function PatientAppointmentsPage() {
       <div className="appointmentContainer">
         <header className="appointmentTopbar">
           <div>
-            <Link href="/patient/dashboard" className="appointmentBack">
+            <Link href="/dashboard" className="appointmentBack">
               <span aria-hidden="true">←</span> Kembali ke Dashboard
             </Link>
             <p className="appointmentEyebrow" style={{ marginTop: 22 }}>
@@ -103,7 +108,8 @@ export default function PatientAppointmentsPage() {
             </p>
             <h1 className="appointmentTitle">Reservasi Antrian</h1>
             <p className="appointmentSubtitle">
-              Isi formulir berikut untuk mengajukan jadwal kunjungan ke dokter gigi.
+              Isi formulir berikut untuk mengajukan jadwal kunjungan ke dokter
+              gigi.
             </p>
           </div>
 
@@ -115,8 +121,8 @@ export default function PatientAppointmentsPage() {
         {submitted && (
           <div className="appointmentSuccess" role="status">
             <strong>Formulir reservasi berhasil diisi.</strong>
-            Ini masih berupa demo tampilan. Reservasi belum tersimpan ke database
-            dan belum menjadi jadwal kunjungan resmi.
+            Ini masih berupa demo tampilan. Reservasi belum tersimpan ke
+            database dan belum menjadi jadwal kunjungan resmi.
           </div>
         )}
 
@@ -127,7 +133,10 @@ export default function PatientAppointmentsPage() {
                 <span className="appointmentStep">1</span>
                 <div>
                   <h2>Hari dan Tanggal Kunjungan</h2>
-                  <p>Pilih tanggal yang Anda inginkan untuk melakukan pemeriksaan.</p>
+                  <p>
+                    Pilih tanggal yang Anda inginkan untuk melakukan
+                    pemeriksaan.
+                  </p>
                 </div>
               </div>
 
@@ -148,8 +157,8 @@ export default function PatientAppointmentsPage() {
                   required
                 />
                 <span className="appointmentHelpText">
-                  Tanggal yang dipilih belum menjamin ketersediaan jadwal. Petugas perlu
-                  mengonfirmasi reservasi Anda.
+                  Tanggal yang dipilih belum menjamin ketersediaan jadwal.
+                  Petugas perlu mengonfirmasi reservasi Anda.
                 </span>
               </div>
             </section>
@@ -159,7 +168,10 @@ export default function PatientAppointmentsPage() {
                 <span className="appointmentStep">2</span>
                 <div>
                   <h2>Keluhan yang Dirasakan</h2>
-                  <p>Ceritakan keluhan utama agar petugas memahami kebutuhan Anda.</p>
+                  <p>
+                    Ceritakan keluhan utama agar petugas memahami kebutuhan
+                    Anda.
+                  </p>
                 </div>
               </div>
 
@@ -181,7 +193,8 @@ export default function PatientAppointmentsPage() {
                   required
                 />
                 <span className="appointmentHelpText">
-                  Tulis keluhan secara singkat dan jelas. Maksimal 1.000 karakter.
+                  Tulis keluhan secara singkat dan jelas. Maksimal 1.000
+                  karakter.
                 </span>
               </div>
             </section>
@@ -191,7 +204,10 @@ export default function PatientAppointmentsPage() {
                 <span className="appointmentStep">3</span>
                 <div>
                   <h2>Jenis Pemeriksaan</h2>
-                  <p>Pilih jenis layanan yang paling sesuai dengan kebutuhan Anda.</p>
+                  <p>
+                    Pilih jenis layanan yang paling sesuai dengan kebutuhan
+                    Anda.
+                  </p>
                 </div>
               </div>
 
@@ -255,16 +271,21 @@ export default function PatientAppointmentsPage() {
             </button>
 
             <p className="appointmentDisclaimer">
-              Pengajuan ini bukan konfirmasi jadwal. Jadwal resmi mengikuti konfirmasi
-              dari pihak klinik.
+              Pengajuan ini bukan konfirmasi jadwal. Jadwal resmi mengikuti
+              konfirmasi dari pihak klinik.
             </p>
           </form>
 
           <aside className="appointmentAside">
             <article className="appointmentAsideCard">
-              <div className="appointmentAsideIcon" aria-hidden="true">◷</div>
+              <div className="appointmentAsideIcon" aria-hidden="true">
+                ◷
+              </div>
               <h3>Jam Operasional</h3>
-              <p>Silakan pilih tanggal kunjungan dan tunggu konfirmasi jadwal dari klinik.</p>
+              <p>
+                Silakan pilih tanggal kunjungan dan tunggu konfirmasi jadwal
+                dari klinik.
+              </p>
 
               <div className="appointmentHours">
                 <div className="appointmentHoursRow">
@@ -283,24 +304,27 @@ export default function PatientAppointmentsPage() {
             </article>
 
             <article className="appointmentAsideCard">
-              <div className="appointmentAsideIcon" aria-hidden="true">i</div>
+              <div className="appointmentAsideIcon" aria-hidden="true">
+                i
+              </div>
               <h3>Sebelum Reservasi</h3>
               <p>
-                Pilih jenis pemeriksaan berdasarkan kebutuhan Anda. Dokter gigi akan
-                menentukan tindakan yang tepat setelah pemeriksaan langsung.
+                Pilih jenis pemeriksaan berdasarkan kebutuhan Anda. Dokter gigi
+                akan menentukan tindakan yang tepat setelah pemeriksaan
+                langsung.
               </p>
             </article>
 
             <div className="appointmentInfoNotice">
-              Jika mengalami nyeri hebat, pembengkakan yang cepat membesar, demam,
-              atau kesulitan bernapas/menelan, cari pertolongan medis segera dan
-              jangan menunggu tanggal reservasi.
+              Jika mengalami nyeri hebat, pembengkakan yang cepat membesar,
+              demam, atau kesulitan bernapas/menelan, cari pertolongan medis
+              segera dan jangan menunggu tanggal reservasi.
             </div>
           </aside>
         </div>
 
         <footer className="appointmentFooter">
-          <span>© {new Date().getFullYear()} SmileCare Dental Clinic</span>
+          <span>© {year ? year : "2026"} SmileCare Dental Clinic</span>
           <span>Formulir reservasi pasien</span>
         </footer>
       </div>
