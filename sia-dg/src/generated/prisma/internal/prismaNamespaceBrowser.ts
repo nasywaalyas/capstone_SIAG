@@ -53,6 +53,7 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   User: 'User',
   Dokter: 'Dokter',
+  JadwalDokter: 'JadwalDokter',
   Pasien: 'Pasien',
   Antrian: 'Antrian',
   Pemeriksaan: 'Pemeriksaan'
@@ -96,6 +97,21 @@ export const DokterScalarFieldEnum = {
 export type DokterScalarFieldEnum = (typeof DokterScalarFieldEnum)[keyof typeof DokterScalarFieldEnum]
 
 
+export const JadwalDokterScalarFieldEnum = {
+  id: 'id',
+  dokterId: 'dokterId',
+  hari: 'hari',
+  jamMulai: 'jamMulai',
+  jamSelesai: 'jamSelesai',
+  kuota: 'kuota',
+  isAktif: 'isAktif',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type JadwalDokterScalarFieldEnum = (typeof JadwalDokterScalarFieldEnum)[keyof typeof JadwalDokterScalarFieldEnum]
+
+
 export const PasienScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -116,6 +132,8 @@ export const AntrianScalarFieldEnum = {
   dokterId: 'dokterId',
   tanggal: 'tanggal',
   nomorAntrian: 'nomorAntrian',
+  layanan: 'layanan',
+  waktu: 'waktu',
   keluhan: 'keluhan',
   status: 'status',
   createdAt: 'createdAt'

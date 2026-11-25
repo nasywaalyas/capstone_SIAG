@@ -2,35 +2,16 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Suspense } from "react"; // Tambahkan import Suspense
 
 type Queue = {
+  id: string;
   number: string;
   doctor: string;
   service: string;
   time: string;
   status: string;
+  rawStatus: string;
 };
-
-const todayQueues: Queue[] = [
-  {
-    number: "A-012",
-    doctor: "drg. Andini Putri",
-    service: "Pemeriksaan Gigi",
-    time: "09.30 WIB",
-    status: "Menunggu",
-  },
-];
-
-const tomorrowQueues: Queue[] = [
-  {
-    number: "A-018",
-    doctor: "drg. Andini Putri",
-    service: "Konsultasi Gigi",
-    time: "10.00 WIB",
-    status: "Terjadwal",
-  },
-];
 
 function formatDate(date: Date) {
   return new Intl.DateTimeFormat("id-ID", {
@@ -67,11 +48,13 @@ function isClinicOpen(date: Date) {
 export default function PatientDashboard() {
   const [now, setNow] = useState<Date | null>(null);
   const [activeTab, setActiveTab] = useState<"today" | "tomorrow">("today");
-  // Tambahkan state untuk tanggal besok
   const [tomorrowDateStr, setTomorrowDateStr] = useState<string>("Memuat...");
 
+  const [todayQueues, setTodayQueues] = useState<Queue[]>([]);
+  const [tomorrowQueues, setTomorrowQueues] = useState<Queue[]>([]);
+  const [loadingQueues, setLoadingQueues] = useState<boolean>(true);
+
   useEffect(() => {
-    // Jalankan logika getJakartaDate di dalam useEffect
     const parts = new Intl.DateTimeFormat("en-CA", {
       timeZone: "Asia/Jakarta",
       year: "numeric",
@@ -87,19 +70,41 @@ export default function PatientDashboard() {
       Date.UTC(
         Number(values.year),
         Number(values.month) - 1,
-        Number(values.day) + 1, // Offset 1 untuk besok
+        Number(values.day) + 1,
         12,
       ),
     );
 
     setTomorrowDateStr(formatDate(date));
 
-    // Update jam
     const updateClock = () => setNow(new Date());
     updateClock();
 
     const timer = window.setInterval(updateClock, 1000);
     return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    async function fetchQueues() {
+      setLoadingQueues(true);
+      try {
+        const response = await fetch("/api/patient/queues", {
+          cache: "no-store",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setTodayQueues(data.today ?? []);
+          setTomorrowQueues(data.tomorrow ?? []);
+        }
+      } catch (error) {
+        console.error("Gagal memuat antrian:", error);
+      } finally {
+        setLoadingQueues(false);
+      }
+    }
+
+    fetchQueues();
   }, []);
 
   const queues = activeTab === "today" ? todayQueues : tomorrowQueues;
@@ -211,9 +216,15 @@ export default function PatientDashboard() {
           </div>
 
           <div className="queueList">
-            {queues.length > 0 ? (
+            {loadingQueues ? (
+              <div className="emptyState">
+                <span className="emptyIcon">◷</span>
+                <strong>Memuat jadwal antrian...</strong>
+                <p>Sedang mengambil data antrian dari database.</p>
+              </div>
+            ) : queues.length > 0 ? (
               queues.map((queue) => (
-                <article className="queueCard" key={queue.number}>
+                <article className="queueCard" key={queue.id}>
                   <div className="queueNumber">
                     <span>NOMOR ANTRIAN</span>
                     <strong>{queue.number}</strong>
@@ -245,7 +256,10 @@ export default function PatientDashboard() {
                   Anda belum memiliki reservasi untuk{" "}
                   {activeTab === "today" ? "hari ini" : "besok"}.
                 </p>
-                <Link href="/patient/appointments" className="secondaryButton">
+                <Link
+                  href="/dashboard/appointments"
+                  className="secondaryButton"
+                >
                   Buat Reservasi
                 </Link>
               </div>
@@ -309,7 +323,7 @@ export default function PatientDashboard() {
               yang diperlukan untuk pemeriksaan.
             </p>
 
-            <Link href="/patient/appointments" className="textLink">
+            <Link href="/dashboard/appointments" className="textLink">
               Lihat reservasi <span>→</span>
             </Link>
           </article>

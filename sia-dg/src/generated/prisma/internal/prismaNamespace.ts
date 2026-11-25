@@ -399,6 +399,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   User: 'User',
   Dokter: 'Dokter',
+  JadwalDokter: 'JadwalDokter',
   Pasien: 'Pasien',
   Antrian: 'Antrian',
   Pemeriksaan: 'Pemeriksaan'
@@ -417,7 +418,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "dokter" | "pasien" | "antrian" | "pemeriksaan"
+    modelProps: "user" | "dokter" | "jadwalDokter" | "pasien" | "antrian" | "pemeriksaan"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -566,6 +567,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.DokterCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.DokterCountAggregateOutputType> | number
+        }
+      }
+    }
+    JadwalDokter: {
+      payload: Prisma.$JadwalDokterPayload<ExtArgs>
+      fields: Prisma.JadwalDokterFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.JadwalDokterFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$JadwalDokterPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.JadwalDokterFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$JadwalDokterPayload>
+        }
+        findFirst: {
+          args: Prisma.JadwalDokterFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$JadwalDokterPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.JadwalDokterFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$JadwalDokterPayload>
+        }
+        findMany: {
+          args: Prisma.JadwalDokterFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$JadwalDokterPayload>[]
+        }
+        create: {
+          args: Prisma.JadwalDokterCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$JadwalDokterPayload>
+        }
+        createMany: {
+          args: Prisma.JadwalDokterCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.JadwalDokterCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$JadwalDokterPayload>[]
+        }
+        delete: {
+          args: Prisma.JadwalDokterDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$JadwalDokterPayload>
+        }
+        update: {
+          args: Prisma.JadwalDokterUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$JadwalDokterPayload>
+        }
+        deleteMany: {
+          args: Prisma.JadwalDokterDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.JadwalDokterUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.JadwalDokterUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$JadwalDokterPayload>[]
+        }
+        upsert: {
+          args: Prisma.JadwalDokterUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$JadwalDokterPayload>
+        }
+        aggregate: {
+          args: Prisma.JadwalDokterAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateJadwalDokter>
+        }
+        groupBy: {
+          args: Prisma.JadwalDokterGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.JadwalDokterGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.JadwalDokterCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.JadwalDokterCountAggregateOutputType> | number
         }
       }
     }
@@ -852,6 +927,21 @@ export const DokterScalarFieldEnum = {
 export type DokterScalarFieldEnum = (typeof DokterScalarFieldEnum)[keyof typeof DokterScalarFieldEnum]
 
 
+export const JadwalDokterScalarFieldEnum = {
+  id: 'id',
+  dokterId: 'dokterId',
+  hari: 'hari',
+  jamMulai: 'jamMulai',
+  jamSelesai: 'jamSelesai',
+  kuota: 'kuota',
+  isAktif: 'isAktif',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type JadwalDokterScalarFieldEnum = (typeof JadwalDokterScalarFieldEnum)[keyof typeof JadwalDokterScalarFieldEnum]
+
+
 export const PasienScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -872,6 +962,8 @@ export const AntrianScalarFieldEnum = {
   dokterId: 'dokterId',
   tanggal: 'tanggal',
   nomorAntrian: 'nomorAntrian',
+  layanan: 'layanan',
+  waktu: 'waktu',
   keluhan: 'keluhan',
   status: 'status',
   createdAt: 'createdAt'
@@ -964,20 +1056,6 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
- * Reference to a field of type 'JenisKelamin'
- */
-export type EnumJenisKelaminFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'JenisKelamin'>
-    
-
-
-/**
- * Reference to a field of type 'JenisKelamin[]'
- */
-export type ListEnumJenisKelaminFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'JenisKelamin[]'>
-    
-
-
-/**
  * Reference to a field of type 'Int'
  */
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -988,6 +1066,27 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
+ * Reference to a field of type 'JenisKelamin'
+ */
+export type EnumJenisKelaminFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'JenisKelamin'>
+    
+
+
+/**
+ * Reference to a field of type 'JenisKelamin[]'
+ */
+export type ListEnumJenisKelaminFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'JenisKelamin[]'>
     
 
 
@@ -1171,6 +1270,7 @@ export type PrismaClientOptions = PrismaClientOptionsWithAccelerateUrl | PrismaC
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   dokter?: Prisma.DokterOmit
+  jadwalDokter?: Prisma.JadwalDokterOmit
   pasien?: Prisma.PasienOmit
   antrian?: Prisma.AntrianOmit
   pemeriksaan?: Prisma.PemeriksaanOmit

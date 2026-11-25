@@ -40,6 +40,8 @@ export type AntrianMinAggregateOutputType = {
   dokterId: string | null
   tanggal: Date | null
   nomorAntrian: number | null
+  layanan: string | null
+  waktu: string | null
   keluhan: string | null
   status: $Enums.StatusAntrian | null
   createdAt: Date | null
@@ -51,6 +53,8 @@ export type AntrianMaxAggregateOutputType = {
   dokterId: string | null
   tanggal: Date | null
   nomorAntrian: number | null
+  layanan: string | null
+  waktu: string | null
   keluhan: string | null
   status: $Enums.StatusAntrian | null
   createdAt: Date | null
@@ -62,6 +66,8 @@ export type AntrianCountAggregateOutputType = {
   dokterId: number
   tanggal: number
   nomorAntrian: number
+  layanan: number
+  waktu: number
   keluhan: number
   status: number
   createdAt: number
@@ -83,6 +89,8 @@ export type AntrianMinAggregateInputType = {
   dokterId?: true
   tanggal?: true
   nomorAntrian?: true
+  layanan?: true
+  waktu?: true
   keluhan?: true
   status?: true
   createdAt?: true
@@ -94,6 +102,8 @@ export type AntrianMaxAggregateInputType = {
   dokterId?: true
   tanggal?: true
   nomorAntrian?: true
+  layanan?: true
+  waktu?: true
   keluhan?: true
   status?: true
   createdAt?: true
@@ -105,6 +115,8 @@ export type AntrianCountAggregateInputType = {
   dokterId?: true
   tanggal?: true
   nomorAntrian?: true
+  layanan?: true
+  waktu?: true
   keluhan?: true
   status?: true
   createdAt?: true
@@ -203,6 +215,8 @@ export type AntrianGroupByOutputType = {
   dokterId: string | null
   tanggal: Date
   nomorAntrian: number
+  layanan: string | null
+  waktu: string | null
   keluhan: string | null
   status: $Enums.StatusAntrian
   createdAt: Date
@@ -237,6 +251,8 @@ export type AntrianWhereInput = {
   dokterId?: Prisma.StringNullableFilter<"Antrian"> | string | null
   tanggal?: Prisma.DateTimeFilter<"Antrian"> | Date | string
   nomorAntrian?: Prisma.IntFilter<"Antrian"> | number
+  layanan?: Prisma.StringNullableFilter<"Antrian"> | string | null
+  waktu?: Prisma.StringNullableFilter<"Antrian"> | string | null
   keluhan?: Prisma.StringNullableFilter<"Antrian"> | string | null
   status?: Prisma.EnumStatusAntrianFilter<"Antrian"> | $Enums.StatusAntrian
   createdAt?: Prisma.DateTimeFilter<"Antrian"> | Date | string
@@ -251,6 +267,8 @@ export type AntrianOrderByWithRelationInput = {
   dokterId?: Prisma.SortOrderInput | Prisma.SortOrder
   tanggal?: Prisma.SortOrder
   nomorAntrian?: Prisma.SortOrder
+  layanan?: Prisma.SortOrderInput | Prisma.SortOrder
+  waktu?: Prisma.SortOrderInput | Prisma.SortOrder
   keluhan?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -269,6 +287,8 @@ export type AntrianWhereUniqueInput = Prisma.AtLeast<{
   dokterId?: Prisma.StringNullableFilter<"Antrian"> | string | null
   tanggal?: Prisma.DateTimeFilter<"Antrian"> | Date | string
   nomorAntrian?: Prisma.IntFilter<"Antrian"> | number
+  layanan?: Prisma.StringNullableFilter<"Antrian"> | string | null
+  waktu?: Prisma.StringNullableFilter<"Antrian"> | string | null
   keluhan?: Prisma.StringNullableFilter<"Antrian"> | string | null
   status?: Prisma.EnumStatusAntrianFilter<"Antrian"> | $Enums.StatusAntrian
   createdAt?: Prisma.DateTimeFilter<"Antrian"> | Date | string
@@ -283,6 +303,8 @@ export type AntrianOrderByWithAggregationInput = {
   dokterId?: Prisma.SortOrderInput | Prisma.SortOrder
   tanggal?: Prisma.SortOrder
   nomorAntrian?: Prisma.SortOrder
+  layanan?: Prisma.SortOrderInput | Prisma.SortOrder
+  waktu?: Prisma.SortOrderInput | Prisma.SortOrder
   keluhan?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -302,6 +324,8 @@ export type AntrianScalarWhereWithAggregatesInput = {
   dokterId?: Prisma.StringNullableWithAggregatesFilter<"Antrian"> | string | null
   tanggal?: Prisma.DateTimeWithAggregatesFilter<"Antrian"> | Date | string
   nomorAntrian?: Prisma.IntWithAggregatesFilter<"Antrian"> | number
+  layanan?: Prisma.StringNullableWithAggregatesFilter<"Antrian"> | string | null
+  waktu?: Prisma.StringNullableWithAggregatesFilter<"Antrian"> | string | null
   keluhan?: Prisma.StringNullableWithAggregatesFilter<"Antrian"> | string | null
   status?: Prisma.EnumStatusAntrianWithAggregatesFilter<"Antrian"> | $Enums.StatusAntrian
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Antrian"> | Date | string
@@ -311,6 +335,8 @@ export type AntrianCreateInput = {
   id?: string
   tanggal: Date | string
   nomorAntrian: number
+  layanan?: string | null
+  waktu?: string | null
   keluhan?: string | null
   status?: $Enums.StatusAntrian
   createdAt?: Date | string
@@ -325,6 +351,8 @@ export type AntrianUncheckedCreateInput = {
   dokterId?: string | null
   tanggal: Date | string
   nomorAntrian: number
+  layanan?: string | null
+  waktu?: string | null
   keluhan?: string | null
   status?: $Enums.StatusAntrian
   createdAt?: Date | string
@@ -335,6 +363,8 @@ export type AntrianUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tanggal?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   nomorAntrian?: Prisma.IntFieldUpdateOperationsInput | number
+  layanan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waktu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   keluhan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAntrianFieldUpdateOperationsInput | $Enums.StatusAntrian
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -349,6 +379,8 @@ export type AntrianUncheckedUpdateInput = {
   dokterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tanggal?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   nomorAntrian?: Prisma.IntFieldUpdateOperationsInput | number
+  layanan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waktu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   keluhan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAntrianFieldUpdateOperationsInput | $Enums.StatusAntrian
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -361,6 +393,8 @@ export type AntrianCreateManyInput = {
   dokterId?: string | null
   tanggal: Date | string
   nomorAntrian: number
+  layanan?: string | null
+  waktu?: string | null
   keluhan?: string | null
   status?: $Enums.StatusAntrian
   createdAt?: Date | string
@@ -370,6 +404,8 @@ export type AntrianUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tanggal?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   nomorAntrian?: Prisma.IntFieldUpdateOperationsInput | number
+  layanan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waktu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   keluhan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAntrianFieldUpdateOperationsInput | $Enums.StatusAntrian
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -381,6 +417,8 @@ export type AntrianUncheckedUpdateManyInput = {
   dokterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tanggal?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   nomorAntrian?: Prisma.IntFieldUpdateOperationsInput | number
+  layanan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waktu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   keluhan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAntrianFieldUpdateOperationsInput | $Enums.StatusAntrian
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -407,6 +445,8 @@ export type AntrianCountOrderByAggregateInput = {
   dokterId?: Prisma.SortOrder
   tanggal?: Prisma.SortOrder
   nomorAntrian?: Prisma.SortOrder
+  layanan?: Prisma.SortOrder
+  waktu?: Prisma.SortOrder
   keluhan?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -422,6 +462,8 @@ export type AntrianMaxOrderByAggregateInput = {
   dokterId?: Prisma.SortOrder
   tanggal?: Prisma.SortOrder
   nomorAntrian?: Prisma.SortOrder
+  layanan?: Prisma.SortOrder
+  waktu?: Prisma.SortOrder
   keluhan?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -433,6 +475,8 @@ export type AntrianMinOrderByAggregateInput = {
   dokterId?: Prisma.SortOrder
   tanggal?: Prisma.SortOrder
   nomorAntrian?: Prisma.SortOrder
+  layanan?: Prisma.SortOrder
+  waktu?: Prisma.SortOrder
   keluhan?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -531,14 +575,6 @@ export type AntrianUncheckedUpdateManyWithoutPasienNestedInput = {
   deleteMany?: Prisma.AntrianScalarWhereInput | Prisma.AntrianScalarWhereInput[]
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type EnumStatusAntrianFieldUpdateOperationsInput = {
   set?: $Enums.StatusAntrian
 }
@@ -561,6 +597,8 @@ export type AntrianCreateWithoutDokterInput = {
   id?: string
   tanggal: Date | string
   nomorAntrian: number
+  layanan?: string | null
+  waktu?: string | null
   keluhan?: string | null
   status?: $Enums.StatusAntrian
   createdAt?: Date | string
@@ -573,6 +611,8 @@ export type AntrianUncheckedCreateWithoutDokterInput = {
   pasienId: string
   tanggal: Date | string
   nomorAntrian: number
+  layanan?: string | null
+  waktu?: string | null
   keluhan?: string | null
   status?: $Enums.StatusAntrian
   createdAt?: Date | string
@@ -614,6 +654,8 @@ export type AntrianScalarWhereInput = {
   dokterId?: Prisma.StringNullableFilter<"Antrian"> | string | null
   tanggal?: Prisma.DateTimeFilter<"Antrian"> | Date | string
   nomorAntrian?: Prisma.IntFilter<"Antrian"> | number
+  layanan?: Prisma.StringNullableFilter<"Antrian"> | string | null
+  waktu?: Prisma.StringNullableFilter<"Antrian"> | string | null
   keluhan?: Prisma.StringNullableFilter<"Antrian"> | string | null
   status?: Prisma.EnumStatusAntrianFilter<"Antrian"> | $Enums.StatusAntrian
   createdAt?: Prisma.DateTimeFilter<"Antrian"> | Date | string
@@ -623,6 +665,8 @@ export type AntrianCreateWithoutPasienInput = {
   id?: string
   tanggal: Date | string
   nomorAntrian: number
+  layanan?: string | null
+  waktu?: string | null
   keluhan?: string | null
   status?: $Enums.StatusAntrian
   createdAt?: Date | string
@@ -635,6 +679,8 @@ export type AntrianUncheckedCreateWithoutPasienInput = {
   dokterId?: string | null
   tanggal: Date | string
   nomorAntrian: number
+  layanan?: string | null
+  waktu?: string | null
   keluhan?: string | null
   status?: $Enums.StatusAntrian
   createdAt?: Date | string
@@ -671,6 +717,8 @@ export type AntrianCreateWithoutPemeriksaanInput = {
   id?: string
   tanggal: Date | string
   nomorAntrian: number
+  layanan?: string | null
+  waktu?: string | null
   keluhan?: string | null
   status?: $Enums.StatusAntrian
   createdAt?: Date | string
@@ -684,6 +732,8 @@ export type AntrianUncheckedCreateWithoutPemeriksaanInput = {
   dokterId?: string | null
   tanggal: Date | string
   nomorAntrian: number
+  layanan?: string | null
+  waktu?: string | null
   keluhan?: string | null
   status?: $Enums.StatusAntrian
   createdAt?: Date | string
@@ -709,6 +759,8 @@ export type AntrianUpdateWithoutPemeriksaanInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tanggal?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   nomorAntrian?: Prisma.IntFieldUpdateOperationsInput | number
+  layanan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waktu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   keluhan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAntrianFieldUpdateOperationsInput | $Enums.StatusAntrian
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -722,6 +774,8 @@ export type AntrianUncheckedUpdateWithoutPemeriksaanInput = {
   dokterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tanggal?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   nomorAntrian?: Prisma.IntFieldUpdateOperationsInput | number
+  layanan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waktu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   keluhan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAntrianFieldUpdateOperationsInput | $Enums.StatusAntrian
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -732,6 +786,8 @@ export type AntrianCreateManyDokterInput = {
   pasienId: string
   tanggal: Date | string
   nomorAntrian: number
+  layanan?: string | null
+  waktu?: string | null
   keluhan?: string | null
   status?: $Enums.StatusAntrian
   createdAt?: Date | string
@@ -741,6 +797,8 @@ export type AntrianUpdateWithoutDokterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tanggal?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   nomorAntrian?: Prisma.IntFieldUpdateOperationsInput | number
+  layanan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waktu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   keluhan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAntrianFieldUpdateOperationsInput | $Enums.StatusAntrian
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -753,6 +811,8 @@ export type AntrianUncheckedUpdateWithoutDokterInput = {
   pasienId?: Prisma.StringFieldUpdateOperationsInput | string
   tanggal?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   nomorAntrian?: Prisma.IntFieldUpdateOperationsInput | number
+  layanan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waktu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   keluhan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAntrianFieldUpdateOperationsInput | $Enums.StatusAntrian
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -764,6 +824,8 @@ export type AntrianUncheckedUpdateManyWithoutDokterInput = {
   pasienId?: Prisma.StringFieldUpdateOperationsInput | string
   tanggal?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   nomorAntrian?: Prisma.IntFieldUpdateOperationsInput | number
+  layanan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waktu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   keluhan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAntrianFieldUpdateOperationsInput | $Enums.StatusAntrian
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -774,6 +836,8 @@ export type AntrianCreateManyPasienInput = {
   dokterId?: string | null
   tanggal: Date | string
   nomorAntrian: number
+  layanan?: string | null
+  waktu?: string | null
   keluhan?: string | null
   status?: $Enums.StatusAntrian
   createdAt?: Date | string
@@ -783,6 +847,8 @@ export type AntrianUpdateWithoutPasienInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tanggal?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   nomorAntrian?: Prisma.IntFieldUpdateOperationsInput | number
+  layanan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waktu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   keluhan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAntrianFieldUpdateOperationsInput | $Enums.StatusAntrian
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -795,6 +861,8 @@ export type AntrianUncheckedUpdateWithoutPasienInput = {
   dokterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tanggal?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   nomorAntrian?: Prisma.IntFieldUpdateOperationsInput | number
+  layanan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waktu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   keluhan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAntrianFieldUpdateOperationsInput | $Enums.StatusAntrian
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -806,6 +874,8 @@ export type AntrianUncheckedUpdateManyWithoutPasienInput = {
   dokterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tanggal?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   nomorAntrian?: Prisma.IntFieldUpdateOperationsInput | number
+  layanan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  waktu?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   keluhan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumStatusAntrianFieldUpdateOperationsInput | $Enums.StatusAntrian
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -819,6 +889,8 @@ export type AntrianSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   dokterId?: boolean
   tanggal?: boolean
   nomorAntrian?: boolean
+  layanan?: boolean
+  waktu?: boolean
   keluhan?: boolean
   status?: boolean
   createdAt?: boolean
@@ -833,6 +905,8 @@ export type AntrianSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   dokterId?: boolean
   tanggal?: boolean
   nomorAntrian?: boolean
+  layanan?: boolean
+  waktu?: boolean
   keluhan?: boolean
   status?: boolean
   createdAt?: boolean
@@ -846,6 +920,8 @@ export type AntrianSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   dokterId?: boolean
   tanggal?: boolean
   nomorAntrian?: boolean
+  layanan?: boolean
+  waktu?: boolean
   keluhan?: boolean
   status?: boolean
   createdAt?: boolean
@@ -859,12 +935,14 @@ export type AntrianSelectScalar = {
   dokterId?: boolean
   tanggal?: boolean
   nomorAntrian?: boolean
+  layanan?: boolean
+  waktu?: boolean
   keluhan?: boolean
   status?: boolean
   createdAt?: boolean
 }
 
-export type AntrianOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pasienId" | "dokterId" | "tanggal" | "nomorAntrian" | "keluhan" | "status" | "createdAt", ExtArgs["result"]["antrian"]>
+export type AntrianOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pasienId" | "dokterId" | "tanggal" | "nomorAntrian" | "layanan" | "waktu" | "keluhan" | "status" | "createdAt", ExtArgs["result"]["antrian"]>
 export type AntrianInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   pasien?: boolean | Prisma.PasienDefaultArgs<ExtArgs>
   dokter?: boolean | Prisma.Antrian$dokterArgs<ExtArgs>
@@ -892,6 +970,8 @@ export type $AntrianPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     dokterId: string | null
     tanggal: Date
     nomorAntrian: number
+    layanan: string | null
+    waktu: string | null
     keluhan: string | null
     status: $Enums.StatusAntrian
     createdAt: Date
@@ -1326,6 +1406,8 @@ export interface AntrianFieldRefs {
   readonly dokterId: Prisma.FieldRef<"Antrian", 'String'>
   readonly tanggal: Prisma.FieldRef<"Antrian", 'DateTime'>
   readonly nomorAntrian: Prisma.FieldRef<"Antrian", 'Int'>
+  readonly layanan: Prisma.FieldRef<"Antrian", 'String'>
+  readonly waktu: Prisma.FieldRef<"Antrian", 'String'>
   readonly keluhan: Prisma.FieldRef<"Antrian", 'String'>
   readonly status: Prisma.FieldRef<"Antrian", 'StatusAntrian'>
   readonly createdAt: Prisma.FieldRef<"Antrian", 'DateTime'>
