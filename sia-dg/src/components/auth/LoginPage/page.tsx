@@ -3,10 +3,10 @@
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // Import useRouter untuk navigasi
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const router = useRouter(); // Inisialisasi router
+  const router = useRouter();
 
   const [form, setForm] = useState({
     username: "",
@@ -14,7 +14,8 @@ export default function LoginPage() {
   });
 
   const [pesan, setPesan] = useState("");
-  const [loading, setLoading] = useState(false); // State untuk tombol loading
+  const [loading, setLoading] = useState(false);
+  const [lihatPassword, setLihatPassword] = useState(false);
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
@@ -23,6 +24,10 @@ export default function LoginPage() {
       ...data,
       [name]: value,
     }));
+
+    if (pesan) {
+      setPesan("");
+    }
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -31,7 +36,6 @@ export default function LoginPage() {
     setPesan("");
 
     try {
-      // Memanggil API login
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
@@ -43,17 +47,23 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        // Jika gagal (contoh: username/password salah)
         setPesan(data.message || "Gagal melakukan login.");
-      } else {
-        // Jika sukses
-        setPesan("Login berhasil! Mengarahkan ke dashboard...");
-
-        // Pindah ke halaman dashboard
-        // Gunakan data.redirectUrl jika Anda ingin arahannya dinamis sesuai Role (dari API)
-        // Atau ketik "/dashboard" jika Anda hanya punya 1 halaman dashboard general
-        router.push("/dashboard");
+        return;
       }
+
+      setPesan(data.message || "Login berhasil! Mengarahkan ke dashboard...");
+
+      if (data.user) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+      }
+
+      setForm({
+        username: "",
+        password: "",
+      });
+
+      router.push(data.redirectUrl || "/patient/dashboard");
+      router.refresh();
     } catch {
       setPesan("Terjadi kesalahan koneksi ke server.");
     } finally {
@@ -67,7 +77,7 @@ export default function LoginPage() {
         <div className="register-heading">
           <div className="register-icon">✚</div>
 
-          <h1>Login Pasien</h1>
+          <h1>Login Sistem</h1>
 
           <p>Sistem Informasi Antrean Poli Gigi</p>
         </div>
@@ -91,16 +101,30 @@ export default function LoginPage() {
           <div className="form-group">
             <label htmlFor="password">Password</label>
 
-            <input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="Masukkan password"
-              value={form.password}
-              onChange={handleChange}
-              autoComplete="current-password"
-              required
-            />
+            <div className="password-wrapper">
+              <input
+                id="password"
+                name="password"
+                type={lihatPassword ? "text" : "password"}
+                placeholder="Masukkan password"
+                value={form.password}
+                onChange={handleChange}
+                autoComplete="current-password"
+                required
+              />
+
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setLihatPassword((sebelumnya) => !sebelumnya)}
+                aria-label={
+                  lihatPassword ? "Sembunyikan password" : "Lihat password"
+                }
+                aria-pressed={lihatPassword}
+              >
+                {lihatPassword ? "🙈" : "👁"}
+              </button>
+            </div>
           </div>
 
           {pesan && (
@@ -116,7 +140,7 @@ export default function LoginPage() {
 
         <p className="register-footer">
           Belum mempunyai akun?{" "}
-          <Link href={"/auth/register"}>Daftar sebagai Pasien</Link>
+          <Link href="/auth/register">Daftar sebagai Pasien</Link>
         </p>
       </section>
     </main>

@@ -168,6 +168,7 @@ export type DokterWhereInput = {
   spesialisasi?: Prisma.StringNullableFilter<"Dokter"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   antrian?: Prisma.AntrianListRelationFilter
+  jadwal?: Prisma.JadwalDokterListRelationFilter
 }
 
 export type DokterOrderByWithRelationInput = {
@@ -176,6 +177,7 @@ export type DokterOrderByWithRelationInput = {
   spesialisasi?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   antrian?: Prisma.AntrianOrderByRelationAggregateInput
+  jadwal?: Prisma.JadwalDokterOrderByRelationAggregateInput
 }
 
 export type DokterWhereUniqueInput = Prisma.AtLeast<{
@@ -187,6 +189,7 @@ export type DokterWhereUniqueInput = Prisma.AtLeast<{
   spesialisasi?: Prisma.StringNullableFilter<"Dokter"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   antrian?: Prisma.AntrianListRelationFilter
+  jadwal?: Prisma.JadwalDokterListRelationFilter
 }, "id" | "userId">
 
 export type DokterOrderByWithAggregationInput = {
@@ -212,6 +215,7 @@ export type DokterCreateInput = {
   spesialisasi?: string | null
   user: Prisma.UserCreateNestedOneWithoutProfilDokterInput
   antrian?: Prisma.AntrianCreateNestedManyWithoutDokterInput
+  jadwal?: Prisma.JadwalDokterCreateNestedManyWithoutDokterInput
 }
 
 export type DokterUncheckedCreateInput = {
@@ -219,6 +223,7 @@ export type DokterUncheckedCreateInput = {
   userId: string
   spesialisasi?: string | null
   antrian?: Prisma.AntrianUncheckedCreateNestedManyWithoutDokterInput
+  jadwal?: Prisma.JadwalDokterUncheckedCreateNestedManyWithoutDokterInput
 }
 
 export type DokterUpdateInput = {
@@ -226,6 +231,7 @@ export type DokterUpdateInput = {
   spesialisasi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutProfilDokterNestedInput
   antrian?: Prisma.AntrianUpdateManyWithoutDokterNestedInput
+  jadwal?: Prisma.JadwalDokterUpdateManyWithoutDokterNestedInput
 }
 
 export type DokterUncheckedUpdateInput = {
@@ -233,6 +239,7 @@ export type DokterUncheckedUpdateInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   spesialisasi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   antrian?: Prisma.AntrianUncheckedUpdateManyWithoutDokterNestedInput
+  jadwal?: Prisma.JadwalDokterUncheckedUpdateManyWithoutDokterNestedInput
 }
 
 export type DokterCreateManyInput = {
@@ -275,6 +282,11 @@ export type DokterMinOrderByAggregateInput = {
   spesialisasi?: Prisma.SortOrder
 }
 
+export type DokterScalarRelationFilter = {
+  is?: Prisma.DokterWhereInput
+  isNot?: Prisma.DokterWhereInput
+}
+
 export type DokterCreateNestedOneWithoutUserInput = {
   create?: Prisma.XOR<Prisma.DokterCreateWithoutUserInput, Prisma.DokterUncheckedCreateWithoutUserInput>
   connectOrCreate?: Prisma.DokterCreateOrConnectWithoutUserInput
@@ -311,6 +323,20 @@ export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
 }
 
+export type DokterCreateNestedOneWithoutJadwalInput = {
+  create?: Prisma.XOR<Prisma.DokterCreateWithoutJadwalInput, Prisma.DokterUncheckedCreateWithoutJadwalInput>
+  connectOrCreate?: Prisma.DokterCreateOrConnectWithoutJadwalInput
+  connect?: Prisma.DokterWhereUniqueInput
+}
+
+export type DokterUpdateOneRequiredWithoutJadwalNestedInput = {
+  create?: Prisma.XOR<Prisma.DokterCreateWithoutJadwalInput, Prisma.DokterUncheckedCreateWithoutJadwalInput>
+  connectOrCreate?: Prisma.DokterCreateOrConnectWithoutJadwalInput
+  upsert?: Prisma.DokterUpsertWithoutJadwalInput
+  connect?: Prisma.DokterWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DokterUpdateToOneWithWhereWithoutJadwalInput, Prisma.DokterUpdateWithoutJadwalInput>, Prisma.DokterUncheckedUpdateWithoutJadwalInput>
+}
+
 export type DokterCreateNestedOneWithoutAntrianInput = {
   create?: Prisma.XOR<Prisma.DokterCreateWithoutAntrianInput, Prisma.DokterUncheckedCreateWithoutAntrianInput>
   connectOrCreate?: Prisma.DokterCreateOrConnectWithoutAntrianInput
@@ -331,12 +357,14 @@ export type DokterCreateWithoutUserInput = {
   id?: string
   spesialisasi?: string | null
   antrian?: Prisma.AntrianCreateNestedManyWithoutDokterInput
+  jadwal?: Prisma.JadwalDokterCreateNestedManyWithoutDokterInput
 }
 
 export type DokterUncheckedCreateWithoutUserInput = {
   id?: string
   spesialisasi?: string | null
   antrian?: Prisma.AntrianUncheckedCreateNestedManyWithoutDokterInput
+  jadwal?: Prisma.JadwalDokterUncheckedCreateNestedManyWithoutDokterInput
 }
 
 export type DokterCreateOrConnectWithoutUserInput = {
@@ -359,10 +387,56 @@ export type DokterUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   spesialisasi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   antrian?: Prisma.AntrianUpdateManyWithoutDokterNestedInput
+  jadwal?: Prisma.JadwalDokterUpdateManyWithoutDokterNestedInput
 }
 
 export type DokterUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  spesialisasi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  antrian?: Prisma.AntrianUncheckedUpdateManyWithoutDokterNestedInput
+  jadwal?: Prisma.JadwalDokterUncheckedUpdateManyWithoutDokterNestedInput
+}
+
+export type DokterCreateWithoutJadwalInput = {
+  id?: string
+  spesialisasi?: string | null
+  user: Prisma.UserCreateNestedOneWithoutProfilDokterInput
+  antrian?: Prisma.AntrianCreateNestedManyWithoutDokterInput
+}
+
+export type DokterUncheckedCreateWithoutJadwalInput = {
+  id?: string
+  userId: string
+  spesialisasi?: string | null
+  antrian?: Prisma.AntrianUncheckedCreateNestedManyWithoutDokterInput
+}
+
+export type DokterCreateOrConnectWithoutJadwalInput = {
+  where: Prisma.DokterWhereUniqueInput
+  create: Prisma.XOR<Prisma.DokterCreateWithoutJadwalInput, Prisma.DokterUncheckedCreateWithoutJadwalInput>
+}
+
+export type DokterUpsertWithoutJadwalInput = {
+  update: Prisma.XOR<Prisma.DokterUpdateWithoutJadwalInput, Prisma.DokterUncheckedUpdateWithoutJadwalInput>
+  create: Prisma.XOR<Prisma.DokterCreateWithoutJadwalInput, Prisma.DokterUncheckedCreateWithoutJadwalInput>
+  where?: Prisma.DokterWhereInput
+}
+
+export type DokterUpdateToOneWithWhereWithoutJadwalInput = {
+  where?: Prisma.DokterWhereInput
+  data: Prisma.XOR<Prisma.DokterUpdateWithoutJadwalInput, Prisma.DokterUncheckedUpdateWithoutJadwalInput>
+}
+
+export type DokterUpdateWithoutJadwalInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  spesialisasi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  user?: Prisma.UserUpdateOneRequiredWithoutProfilDokterNestedInput
+  antrian?: Prisma.AntrianUpdateManyWithoutDokterNestedInput
+}
+
+export type DokterUncheckedUpdateWithoutJadwalInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   spesialisasi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   antrian?: Prisma.AntrianUncheckedUpdateManyWithoutDokterNestedInput
 }
@@ -371,12 +445,14 @@ export type DokterCreateWithoutAntrianInput = {
   id?: string
   spesialisasi?: string | null
   user: Prisma.UserCreateNestedOneWithoutProfilDokterInput
+  jadwal?: Prisma.JadwalDokterCreateNestedManyWithoutDokterInput
 }
 
 export type DokterUncheckedCreateWithoutAntrianInput = {
   id?: string
   userId: string
   spesialisasi?: string | null
+  jadwal?: Prisma.JadwalDokterUncheckedCreateNestedManyWithoutDokterInput
 }
 
 export type DokterCreateOrConnectWithoutAntrianInput = {
@@ -399,12 +475,14 @@ export type DokterUpdateWithoutAntrianInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   spesialisasi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutProfilDokterNestedInput
+  jadwal?: Prisma.JadwalDokterUpdateManyWithoutDokterNestedInput
 }
 
 export type DokterUncheckedUpdateWithoutAntrianInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   spesialisasi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jadwal?: Prisma.JadwalDokterUncheckedUpdateManyWithoutDokterNestedInput
 }
 
 
@@ -414,10 +492,12 @@ export type DokterUncheckedUpdateWithoutAntrianInput = {
 
 export type DokterCountOutputType = {
   antrian: number
+  jadwal: number
 }
 
 export type DokterCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   antrian?: boolean | DokterCountOutputTypeCountAntrianArgs
+  jadwal?: boolean | DokterCountOutputTypeCountJadwalArgs
 }
 
 /**
@@ -437,6 +517,13 @@ export type DokterCountOutputTypeCountAntrianArgs<ExtArgs extends runtime.Types.
   where?: Prisma.AntrianWhereInput
 }
 
+/**
+ * DokterCountOutputType without action
+ */
+export type DokterCountOutputTypeCountJadwalArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.JadwalDokterWhereInput
+}
+
 
 export type DokterSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -444,6 +531,7 @@ export type DokterSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   spesialisasi?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   antrian?: boolean | Prisma.Dokter$antrianArgs<ExtArgs>
+  jadwal?: boolean | Prisma.Dokter$jadwalArgs<ExtArgs>
   _count?: boolean | Prisma.DokterCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["dokter"]>
 
@@ -471,6 +559,7 @@ export type DokterOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 export type DokterInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   antrian?: boolean | Prisma.Dokter$antrianArgs<ExtArgs>
+  jadwal?: boolean | Prisma.Dokter$jadwalArgs<ExtArgs>
   _count?: boolean | Prisma.DokterCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DokterIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -485,6 +574,7 @@ export type $DokterPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     antrian: Prisma.$AntrianPayload<ExtArgs>[]
+    jadwal: Prisma.$JadwalDokterPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -886,6 +976,7 @@ export interface Prisma__DokterClient<T, Null = never, ExtArgs extends runtime.T
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   antrian<T extends Prisma.Dokter$antrianArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Dokter$antrianArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AntrianPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  jadwal<T extends Prisma.Dokter$jadwalArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Dokter$jadwalArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$JadwalDokterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1340,6 +1431,30 @@ export type Dokter$antrianArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.AntrianScalarFieldEnum | Prisma.AntrianScalarFieldEnum[]
+}
+
+/**
+ * Dokter.jadwal
+ */
+export type Dokter$jadwalArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the JadwalDokter
+   */
+  select?: Prisma.JadwalDokterSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the JadwalDokter
+   */
+  omit?: Prisma.JadwalDokterOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JadwalDokterInclude<ExtArgs> | null
+  where?: Prisma.JadwalDokterWhereInput
+  orderBy?: Prisma.JadwalDokterOrderByWithRelationInput | Prisma.JadwalDokterOrderByWithRelationInput[]
+  cursor?: Prisma.JadwalDokterWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.JadwalDokterScalarFieldEnum | Prisma.JadwalDokterScalarFieldEnum[]
 }
 
 /**

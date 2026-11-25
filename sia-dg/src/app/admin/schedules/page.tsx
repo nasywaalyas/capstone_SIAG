@@ -1,10 +1,10 @@
-
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type JadwalDokter = {
-  id: number;
+  id: string;
+  dokterId: string;
   nama: string;
   spesialis: string;
   hari: string;
@@ -14,74 +14,19 @@ type JadwalDokter = {
   status: "Aktif" | "Tidak Aktif";
 };
 
-const NAMA_DOKTER = "drg. Siti";
-const SPESIALIS = "Dokter Gigi Umum";
+type DokterOption = {
+  id: string;
+  nama: string;
+  spesialis: string;
+};
 
-const dataAwal: JadwalDokter[] = [
-  {
-    id: 1,
-    nama: NAMA_DOKTER,
-    spesialis: SPESIALIS,
-    hari: "Senin",
-    mulai: "08:00",
-    selesai: "12:00",
-    kuota: 15,
-    status: "Aktif",
-  },
-  {
-    id: 2,
-    nama: NAMA_DOKTER,
-    spesialis: SPESIALIS,
-    hari: "Senin",
-    mulai: "13:00",
-    selesai: "16:00",
-    kuota: 12,
-    status: "Aktif",
-  },
-  {
-    id: 3,
-    nama: NAMA_DOKTER,
-    spesialis: SPESIALIS,
-    hari: "Rabu",
-    mulai: "08:00",
-    selesai: "12:00",
-    kuota: 15,
-    status: "Aktif",
-  },
-  {
-    id: 4,
-    nama: NAMA_DOKTER,
-    spesialis: SPESIALIS,
-    hari: "Kamis",
-    mulai: "09:00",
-    selesai: "13:00",
-    kuota: 10,
-    status: "Aktif",
-  },
-  {
-    id: 5,
-    nama: NAMA_DOKTER,
-    spesialis: SPESIALIS,
-    hari: "Jumat",
-    mulai: "08:00",
-    selesai: "11:00",
-    kuota: 10,
-    status: "Tidak Aktif",
-  },
-];
+const DEFAULT_NAMA_DOKTER = "drg. Siti";
+const DEFAULT_SPESIALIS = "Dokter Gigi Umum";
 
-const hariPilihan = [
-  "Senin",
-  "Selasa",
-  "Rabu",
-  "Kamis",
-  "Jumat",
-  "Sabtu",
-];
+const hariPilihan = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
 const formKosong = {
-  nama: NAMA_DOKTER,
-  spesialis: SPESIALIS,
+  dokterId: "",
   hari: "Senin",
   mulai: "08:00",
   selesai: "12:00",
@@ -90,19 +35,48 @@ const formKosong = {
 };
 
 export default function SchedulesPage() {
-  const [jadwal, setJadwal] = useState<JadwalDokter[]>(dataAwal);
+  const [jadwal, setJadwal] = useState<JadwalDokter[]>([]);
+  const [daftarDokter, setDaftarDokter] = useState<DokterOption[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [pesan, setPesan] = useState<{
+    tipe: "sukses" | "error";
+    teks: string;
+  } | null>(null);
+
   const [pencarian, setPencarian] = useState("");
   const [filterHari, setFilterHari] = useState("Semua");
   const [modalTerbuka, setModalTerbuka] = useState(false);
-  const [editId, setEditId] = useState<number | null>(null);
+  const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(formKosong);
 
-  // STATISTIK
-  const totalDokter = 1;
+  const ambilDataJadwal = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/admin/schedules", {
+        cache: "no-store",
+      });
+      const data = await response.json();
 
-  const totalAktif = jadwal.filter(
-    (item) => item.status === "Aktif"
-  ).length;
+      if (response.ok) {
+        setJadwal(data.schedules ?? []);
+        setDaftarDokter(data.doctors ?? []);
+      }
+    } catch (error) {
+      console.error("Gagal memuat jadwal dokter:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    ambilDataJadwal();
+  }, [ambilDataJadwal]);
+
+  // STATISTIK
+  const totalDokter = daftarDokter.length > 0 ? daftarDokter.length : 1;
+
+  const totalAktif = jadwal.filter((item) => item.status === "Aktif").length;
 
   const totalJadwal = jadwal.length;
 
@@ -113,27 +87,44 @@ export default function SchedulesPage() {
         .toLowerCase()
         .includes(pencarian.toLowerCase());
 
-      const cocokHari =
-        filterHari === "Semua" || item.hari === filterHari;
+      const cocokHari = filterHari === "Semua" || item.hari === filterHari;
 
       return cocokNama && cocokHari;
     });
   }, [jadwal, pencarian, filterHari]);
 
+  const dokterTerpilih = useMemo(() => {
+    if (daftarDokter.length === 0) {
+      return {
+        id: "",
+        nama: DEFAULT_NAMA_DOKTER,
+        spesialis: DEFAULT_SPESIALIS,
+      };
+    }
+
+    return (
+      daftarDokter.find((doc) => doc.id === form.dokterId) ?? daftarDokter[0]
+    );
+  }, [daftarDokter, form.dokterId]);
+
   // TAMBAH JADWAL
   const bukaTambah = () => {
     setEditId(null);
-    setForm(formKosong);
+    setPesan(null);
+    setForm({
+      ...formKosong,
+      dokterId: daftarDokter[0]?.id ?? "",
+    });
     setModalTerbuka(true);
   };
 
   // EDIT JADWAL
   const bukaEdit = (item: JadwalDokter) => {
     setEditId(item.id);
+    setPesan(null);
 
     setForm({
-      nama: NAMA_DOKTER,
-      spesialis: SPESIALIS,
+      dokterId: item.dokterId,
       hari: item.hari,
       mulai: item.mulai,
       selesai: item.selesai,
@@ -145,9 +136,7 @@ export default function SchedulesPage() {
   };
 
   // SIMPAN JADWAL
-  const simpanJadwal = (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
+  const simpanJadwal = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (form.mulai >= form.selesai) {
@@ -160,52 +149,98 @@ export default function SchedulesPage() {
       return;
     }
 
-    const dataBaru: JadwalDokter = {
-      id: editId ?? Date.now(),
-      nama: NAMA_DOKTER,
-      spesialis: SPESIALIS,
-      hari: form.hari,
-      mulai: form.mulai,
-      selesai: form.selesai,
-      kuota: Number(form.kuota),
-      status: form.status,
-    };
+    setSubmitting(true);
+    setPesan(null);
 
-    if (editId !== null) {
-      setJadwal((prev) =>
-        prev.map((item) =>
-          item.id === editId ? dataBaru : item
-        )
-      );
-    } else {
-      setJadwal((prev) => [...prev, dataBaru]);
+    try {
+      const url =
+        editId !== null
+          ? `/api/admin/schedules/${editId}`
+          : "/api/admin/schedules";
+      const method = editId !== null ? "PATCH" : "POST";
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          dokterId: dokterTerpilih.id,
+          hari: form.hari,
+          mulai: form.mulai,
+          selesai: form.selesai,
+          kuota: Number(form.kuota),
+          status: form.status,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setPesan({
+          tipe: "error",
+          teks: data.message || "Gagal menyimpan jadwal dokter.",
+        });
+        return;
+      }
+
+      setPesan({ tipe: "sukses", teks: data.message });
+      setModalTerbuka(false);
+      setForm(formKosong);
+      setEditId(null);
+      await ambilDataJadwal();
+    } catch {
+      setPesan({
+        tipe: "error",
+        teks: "Terjadi kesalahan koneksi ke server.",
+      });
+    } finally {
+      setSubmitting(false);
     }
-
-    setModalTerbuka(false);
-    setForm(formKosong);
-    setEditId(null);
   };
 
   // HAPUS JADWAL
-  const hapusJadwal = (id: number) => {
+  const hapusJadwal = async (id: string) => {
     if (!window.confirm("Yakin ingin menghapus jadwal ini?")) {
       return;
     }
 
-    setJadwal((prev) =>
-      prev.filter((item) => item.id !== id)
-    );
+    setSubmitting(true);
+    setPesan(null);
+
+    try {
+      const response = await fetch(`/api/admin/schedules/${id}`, {
+        method: "DELETE",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setPesan({
+          tipe: "error",
+          teks: data.message || "Gagal menghapus jadwal dokter.",
+        });
+        return;
+      }
+
+      setPesan({ tipe: "sukses", teks: data.message });
+      await ambilDataJadwal();
+    } catch {
+      setPesan({
+        tipe: "error",
+        teks: "Terjadi kesalahan koneksi ke server.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <div className="space-y-6">
-
       {/* HEADER */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">
-            Jadwal Dokter
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-800">Jadwal Dokter</h1>
 
           <p className="mt-1 text-sm text-gray-500">
             Kelola jadwal pelayanan dokter gigi.
@@ -220,61 +255,59 @@ export default function SchedulesPage() {
         </button>
       </div>
 
+      {/* NOTIFIKASI */}
+      {pesan && (
+        <div
+          role="status"
+          className={`rounded-xl border px-4 py-3 text-sm font-medium ${
+            pesan.tipe === "sukses"
+              ? "border-teal-200 bg-teal-50 text-teal-800"
+              : "border-red-200 bg-red-50 text-red-700"
+          }`}
+        >
+          {pesan.teks}
+        </div>
+      )}
+
       {/* STATISTIK */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-
         {/* TOTAL DOKTER */}
         <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-gray-500">
-            Total Dokter
-          </p>
+          <p className="text-sm text-gray-500">Total Dokter</p>
 
           <h2 className="mt-2 text-3xl font-bold text-gray-800">
-            {totalDokter}
+            {loading ? "..." : totalDokter}
           </h2>
 
-          <p className="mt-2 text-xs text-gray-400">
-            Dokter terdaftar
-          </p>
+          <p className="mt-2 text-xs text-gray-400">Dokter terdaftar</p>
         </div>
 
         {/* JADWAL AKTIF */}
         <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-gray-500">
-            Jadwal Aktif
-          </p>
+          <p className="text-sm text-gray-500">Jadwal Aktif</p>
 
           <h2 className="mt-2 text-3xl font-bold text-teal-700">
-            {totalAktif}
+            {loading ? "..." : totalAktif}
           </h2>
 
-          <p className="mt-2 text-xs text-gray-400">
-            Jadwal pelayanan aktif
-          </p>
+          <p className="mt-2 text-xs text-gray-400">Jadwal pelayanan aktif</p>
         </div>
 
         {/* TOTAL JADWAL */}
         <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-gray-500">
-            Total Jadwal
-          </p>
+          <p className="text-sm text-gray-500">Total Jadwal</p>
 
           <h2 className="mt-2 text-3xl font-bold text-blue-600">
-            {totalJadwal}
+            {loading ? "..." : totalJadwal}
           </h2>
 
-          <p className="mt-2 text-xs text-gray-400">
-            Seluruh jadwal dokter
-          </p>
+          <p className="mt-2 text-xs text-gray-400">Seluruh jadwal dokter</p>
         </div>
-
       </div>
 
       {/* DAFTAR JADWAL */}
       <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-
         <div className="flex flex-col justify-between gap-4 border-b border-gray-100 p-5 lg:flex-row lg:items-center">
-
           <div>
             <h2 className="font-semibold text-gray-800">
               Daftar Jadwal Pelayanan
@@ -286,22 +319,17 @@ export default function SchedulesPage() {
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row">
-
             <input
               type="text"
               value={pencarian}
-              onChange={(e) =>
-                setPencarian(e.target.value)
-              }
+              onChange={(e) => setPencarian(e.target.value)}
               placeholder="Cari nama dokter..."
               className="rounded-lg border border-gray-200 px-4 py-2 text-sm outline-none focus:border-teal-600"
             />
 
             <select
               value={filterHari}
-              onChange={(e) =>
-                setFilterHari(e.target.value)
-              }
+              onChange={(e) => setFilterHari(e.target.value)}
               className="rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-teal-600"
             >
               <option value="Semua">Semua Hari</option>
@@ -312,14 +340,12 @@ export default function SchedulesPage() {
                 </option>
               ))}
             </select>
-
           </div>
         </div>
 
         {/* TABEL */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-
             <thead className="bg-gray-50 text-xs text-gray-500">
               <tr>
                 <th className="px-5 py-4">No.</th>
@@ -334,71 +360,74 @@ export default function SchedulesPage() {
             </thead>
 
             <tbody className="divide-y divide-gray-100">
-
-              {dataTerfilter.map((item, index) => (
-                <tr
-                  key={item.id}
-                  className="hover:bg-gray-50"
-                >
-                  <td className="px-5 py-4 text-gray-500">
-                    {index + 1}
-                  </td>
-
-                  <td className="whitespace-nowrap px-5 py-4 font-medium text-gray-800">
-                    {item.nama}
-                  </td>
-
-                  <td className="whitespace-nowrap px-5 py-4 text-gray-600">
-                    {item.spesialis}
-                  </td>
-
-                  <td className="px-5 py-4 text-gray-600">
-                    {item.hari}
-                  </td>
-
-                  <td className="whitespace-nowrap px-5 py-4 text-gray-600">
-                    {item.mulai} - {item.selesai}
-                  </td>
-
-                  <td className="px-5 py-4 text-gray-600">
-                    {item.kuota} pasien
-                  </td>
-
-                  <td className="px-5 py-4">
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-medium ${
-                        item.status === "Aktif"
-                          ? "bg-teal-50 text-teal-700"
-                          : "bg-gray-100 text-gray-500"
-                      }`}
-                    >
-                      {item.status}
-                    </span>
-                  </td>
-
-                  <td className="px-5 py-4">
-                    <div className="flex justify-center gap-2">
-
-                      <button
-                        onClick={() => bukaEdit(item)}
-                        className="rounded-md bg-blue-50 px-3 py-2 text-xs font-medium text-blue-600 hover:bg-blue-100"
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        onClick={() => hapusJadwal(item.id)}
-                        className="rounded-md bg-red-50 px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-100"
-                      >
-                        Hapus
-                      </button>
-
-                    </div>
+              {loading ? (
+                <tr>
+                  <td
+                    colSpan={8}
+                    className="px-5 py-10 text-center text-gray-500"
+                  >
+                    Memuat jadwal dokter dari database...
                   </td>
                 </tr>
-              ))}
+              ) : (
+                dataTerfilter.map((item, index) => (
+                  <tr key={item.id} className="hover:bg-gray-50">
+                    <td className="px-5 py-4 text-gray-500">{index + 1}</td>
 
-              {dataTerfilter.length === 0 && (
+                    <td className="whitespace-nowrap px-5 py-4 font-medium text-gray-800">
+                      {item.nama}
+                    </td>
+
+                    <td className="whitespace-nowrap px-5 py-4 text-gray-600">
+                      {item.spesialis}
+                    </td>
+
+                    <td className="px-5 py-4 text-gray-600">{item.hari}</td>
+
+                    <td className="whitespace-nowrap px-5 py-4 text-gray-600">
+                      {item.mulai} - {item.selesai}
+                    </td>
+
+                    <td className="px-5 py-4 text-gray-600">
+                      {item.kuota} pasien
+                    </td>
+
+                    <td className="px-5 py-4">
+                      <span
+                        className={`rounded-full px-3 py-1 text-xs font-medium ${
+                          item.status === "Aktif"
+                            ? "bg-teal-50 text-teal-700"
+                            : "bg-gray-100 text-gray-500"
+                        }`}
+                      >
+                        {item.status}
+                      </span>
+                    </td>
+
+                    <td className="px-5 py-4">
+                      <div className="flex justify-center gap-2">
+                        <button
+                          disabled={submitting}
+                          onClick={() => bukaEdit(item)}
+                          className="rounded-md bg-blue-50 px-3 py-2 text-xs font-medium text-blue-600 hover:bg-blue-100 disabled:opacity-60"
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          disabled={submitting}
+                          onClick={() => hapusJadwal(item.id)}
+                          className="rounded-md bg-red-50 px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-100 disabled:opacity-60"
+                        >
+                          Hapus
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+
+              {!loading && dataTerfilter.length === 0 && (
                 <tr>
                   <td
                     colSpan={8}
@@ -408,7 +437,6 @@ export default function SchedulesPage() {
                   </td>
                 </tr>
               )}
-
             </tbody>
           </table>
         </div>
@@ -416,17 +444,13 @@ export default function SchedulesPage() {
         <div className="border-t border-gray-100 px-5 py-4 text-xs text-gray-500">
           Menampilkan {dataTerfilter.length} dari {jadwal.length} jadwal.
         </div>
-
       </section>
 
       {/* MODAL TAMBAH DAN EDIT */}
       {modalTerbuka && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-
           <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl bg-white p-6 shadow-xl">
-
             <div className="mb-5 flex items-center justify-between">
-
               <h2 className="text-lg font-bold text-gray-800">
                 {editId !== null
                   ? "Edit Jadwal Dokter"
@@ -439,25 +463,39 @@ export default function SchedulesPage() {
               >
                 ×
               </button>
-
             </div>
 
-            <form
-              onSubmit={simpanJadwal}
-              className="space-y-4"
-            >
-
+            <form onSubmit={simpanJadwal} className="space-y-4">
               {/* NAMA DOKTER */}
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">
                   Nama Dokter
                 </label>
 
-                <input
-                  value={NAMA_DOKTER}
-                  disabled
-                  className="w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-2.5 text-sm text-gray-600"
-                />
+                {daftarDokter.length > 1 ? (
+                  <select
+                    value={dokterTerpilih.id}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        dokterId: e.target.value,
+                      })
+                    }
+                    className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-teal-600"
+                  >
+                    {daftarDokter.map((doc) => (
+                      <option key={doc.id} value={doc.id}>
+                        {doc.nama}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    value={dokterTerpilih.nama}
+                    disabled
+                    className="w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-2.5 text-sm text-gray-600"
+                  />
+                )}
               </div>
 
               {/* SPESIALISASI */}
@@ -467,7 +505,7 @@ export default function SchedulesPage() {
                 </label>
 
                 <input
-                  value={SPESIALIS}
+                  value={dokterTerpilih.spesialis}
                   disabled
                   className="w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-2.5 text-sm text-gray-600"
                 />
@@ -499,7 +537,6 @@ export default function SchedulesPage() {
 
               {/* JAM PRAKTIK */}
               <div className="grid grid-cols-2 gap-3">
-
                 <div>
                   <label className="mb-1 block text-sm font-medium text-gray-700">
                     Jam Mulai
@@ -537,7 +574,6 @@ export default function SchedulesPage() {
                     className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-teal-600"
                   />
                 </div>
-
               </div>
 
               {/* KUOTA */}
@@ -572,23 +608,18 @@ export default function SchedulesPage() {
                   onChange={(e) =>
                     setForm({
                       ...form,
-                      status: e.target.value as
-                        | "Aktif"
-                        | "Tidak Aktif",
+                      status: e.target.value as "Aktif" | "Tidak Aktif",
                     })
                   }
                   className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-teal-600"
                 >
                   <option value="Aktif">Aktif</option>
-                  <option value="Tidak Aktif">
-                    Tidak Aktif
-                  </option>
+                  <option value="Tidak Aktif">Tidak Aktif</option>
                 </select>
               </div>
 
               {/* TOMBOL */}
               <div className="flex gap-3 pt-3">
-
                 <button
                   type="button"
                   onClick={() => setModalTerbuka(false)}
@@ -599,20 +630,20 @@ export default function SchedulesPage() {
 
                 <button
                   type="submit"
-                  className="flex-1 rounded-lg bg-teal-700 py-2.5 text-sm font-semibold text-white hover:bg-teal-800"
+                  disabled={submitting}
+                  className="flex-1 rounded-lg bg-teal-700 py-2.5 text-sm font-semibold text-white hover:bg-teal-800 disabled:opacity-60"
                 >
-                  {editId !== null
-                    ? "Simpan Perubahan"
-                    : "Simpan Jadwal"}
+                  {submitting
+                    ? "Menyimpan..."
+                    : editId !== null
+                      ? "Simpan Perubahan"
+                      : "Simpan Jadwal"}
                 </button>
-
               </div>
-
             </form>
           </div>
         </div>
       )}
-
     </div>
   );
 }

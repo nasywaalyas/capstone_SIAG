@@ -1,11 +1,19 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import type { Role } from "@/generated/prisma/client";
+
+const ROLE_REDIRECT: Record<Role, string> = {
+  PASIEN: "/dashboard",
+  DOKTER: "/doctor/dashboard",
+  ADMIN: "/admin/dashboard",
+};
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { username, password } = body;
+    const username = String(body.username ?? "").trim();
+    const password = String(body.password ?? "");
 
     if (!username || !password) {
       return NextResponse.json(
@@ -15,9 +23,10 @@ export async function POST(req: Request) {
     }
 
     const user = await prisma.user.findUnique({
-      where: { username: username },
+      where: { username },
       include: {
-        profilPasien: true,
+        profilPasien: { select: { id: true } },
+        profilDokter: { select: { id: true } },
       },
     });
 
@@ -37,27 +46,36 @@ export async function POST(req: Request) {
       );
     }
 
-    let redirectUrl = "/dashboard";
-    if (user.role === "ADMIN") {
-      redirectUrl = "/admin/dashboard";
-    } else if (user.role === "DOKTER") {
-      redirectUrl = "/doctor/dashboard";
-    }
+    const redirectUrl = ROLE_REDIRECT[user.role] ?? "/patient/dashboard";
 
-    return NextResponse.json(
+    const sessionUser = {
+      id: user.id,
+      nama: user.nama,
+      username: user.username,
+      role: user.role,
+      pasienId: user.profilPasien?.id ?? null,
+      dokterId: user.profilDokter?.id ?? null,
+    };
+
+    const response = NextResponse.json(
       {
-        message: "Login berhasil!",
-        user: {
-          id: user.id,
-          nama: user.nama,
-          username: user.username,
-          role: user.role,
-        },
+        message: "Login berhasil! Mengarahkan ke dashboard...",
+        user: sessionUser,
         redirectUrl,
       },
       { status: 200 },
     );
-  } catch {
+
+    response.cookies.set("user_session", JSON.stringify(sessionUser), {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24,
+    });
+
+    return response;
+  } catch (error) {
+    console.error("Login Error:", error);
     return NextResponse.json(
       { message: "Terjadi kesalahan koneksi pada server." },
       { status: 500 },

@@ -43,11 +43,26 @@ model User {
 }
 
 model Dokter {
-  id           String    @id @default(cuid())
-  userId       String    @unique
+  id           String         @id @default(cuid())
+  userId       String         @unique
   spesialisasi String?
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   antrian      Antrian[]
+  jadwal       JadwalDokter[]
+}
+
+model JadwalDokter {
+  id         String   @id @default(cuid())
+  dokterId   String
+  hari       String
+  jamMulai   String
+  jamSelesai String
+  kuota      Int      @default(15)
+  isAktif    Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  dokter Dokter @relation(fields: [dokterId], references: [id], onDelete: Cascade)
 }
 
 model Pasien {
@@ -70,6 +85,8 @@ model Antrian {
   dokterId     String?
   tanggal      DateTime      @db.Date
   nomorAntrian Int
+  layanan      String?
+  waktu        String?
   keluhan      String?
   status       StatusAntrian @default(MENUNGGU)
   createdAt    DateTime      @default(now())

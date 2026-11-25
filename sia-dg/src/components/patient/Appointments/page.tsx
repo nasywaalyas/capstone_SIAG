@@ -42,18 +42,41 @@ const examinationTypes = [
   },
 ];
 
-function getJakartaDateInput() {
+function getJakartaDateInfo(offsetDays = 0) {
+  const now = new Date();
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Jakarta",
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
-  }).formatToParts(new Date());
+    hour: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(now);
 
   const values = Object.fromEntries(
     parts.map((part) => [part.type, part.value]),
   );
-  return `${values.year}-${values.month}-${values.day}`;
+
+  const hour = Number(values.hour);
+  const targetDate = new Date(
+    Date.UTC(
+      Number(values.year),
+      Number(values.month) - 1,
+      Number(values.day) + offsetDays,
+      12,
+    ),
+  );
+
+  const year = targetDate.getUTCFullYear();
+  const month = String(targetDate.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(targetDate.getUTCDate()).padStart(2, "0");
+
+  return {
+    dateInput: `${year}-${month}-${day}`,
+    hour,
+    isClosedToday: hour >= 20,
+    isOpenNow: hour >= 8 && hour < 20,
+  };
 }
 
 function formatJakartaTime(date: Date) {
@@ -66,33 +89,108 @@ function formatJakartaTime(date: Date) {
 }
 
 export default function PatientAppointmentsPage() {
-  const [today, setToday] = useState("");
+  const [minDate, setMinDate] = useState("");
+  const [todayStr, setTodayStr] = useState("");
+  const [isClosedToday, setIsClosedToday] = useState(false);
+  const [isOpenNow, setIsOpenNow] = useState<boolean | null>(null);
+
   const [clock, setClock] = useState("--:--");
   const [date, setDate] = useState("");
   const [complaint, setComplaint] = useState("");
   const [type, setType] = useState("");
   const [otherDetails, setOtherDetails] = useState("");
-  const [submitted, setSubmitted] = useState(false);
   const [year, setYear] = useState<number | null>(null);
+
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [savedQueue, setSavedQueue] = useState<{
+    queueNumber: string;
+    date: string;
+  } | null>(null);
 
   useEffect(() => {
     setYear(new Date().getFullYear());
 
-    const updateClock = () => {
-      setToday(getJakartaDateInput());
+    const updateClockAndSchedule = () => {
+      const todayInfo = getJakartaDateInfo(0);
+      const tomorrowInfo = getJakartaDateInfo(1);
+
+      setTodayStr(todayInfo.dateInput);
+      setIsClosedToday(todayInfo.isClosedToday);
+      setIsOpenNow(todayInfo.isOpenNow);
+      setMinDate(
+        todayInfo.isClosedToday ? tomorrowInfo.dateInput : todayInfo.dateInput,
+      );
       setClock(formatJakartaTime(new Date()));
     };
 
-    updateClock();
-    const timer = window.setInterval(updateClock, 1000);
+    updateClockAndSchedule();
+    const timer = window.setInterval(updateClockAndSchedule, 1000);
     return () => window.clearInterval(timer);
   }, []);
 
+  // Reset pilihan tanggal jika pengguna sempat memilih hari ini lalu melewati pukul 20.00 WIB
+  useEffect(() => {
+    if (isClosedToday && date && date === todayStr) {
+      setDate("");
+      setErrorMessage(
+        "Jam operasional hari ini sudah tutup (pukul 20.00 WIB). Silakan pilih tanggal mulai besok.",
+      );
+    }
+  }, [isClosedToday, date, todayStr]);
+
   const selectedType = examinationTypes.find((item) => item.value === type);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSubmitted(true);
+    setErrorMessage("");
+    setSavedQueue(null);
+
+    const currentInfo = getJakartaDateInfo(0);
+    if (currentInfo.isClosedToday && date <= currentInfo.dateInput) {
+      setErrorMessage(
+        "Jam operasional hari ini sudah tutup (pukul 20.00 WIB). Silakan pilih tanggal mulai besok.",
+      );
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/patient/appointments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          date,
+          complaint,
+          type,
+          otherDetails,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setErrorMessage(result.message || "Gagal menyimpan reservasi.");
+        return;
+      }
+
+      setSavedQueue({
+        queueNumber: result.data.queueNumber,
+        date: result.data.date,
+      });
+
+      setDate("");
+      setComplaint("");
+      setType("");
+      setOtherDetails("");
+    } catch {
+      setErrorMessage("Terjadi kesalahan koneksi ke server.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -118,11 +216,24 @@ export default function PatientAppointmentsPage() {
           </div>
         </header>
 
-        {submitted && (
+        {savedQueue && (
           <div className="appointmentSuccess" role="status">
-            <strong>Formulir reservasi berhasil diisi.</strong>
-            Ini masih berupa demo tampilan. Reservasi belum tersimpan ke
-            database dan belum menjadi jadwal kunjungan resmi.
+            <strong>
+              Reservasi berhasil diajukan! Nomor Antrian Anda:{" "}
+              {savedQueue.queueNumber}
+            </strong>
+            Jadwal kunjungan tanggal {savedQueue.date} telah tersimpan ke
+            database dengan status Menunggu konfirmasi klinik.
+          </div>
+        )}
+
+        {errorMessage && (
+          <div
+            className="appointmentInfoNotice"
+            role="alert"
+            style={{ marginBottom: 20 }}
+          >
+            <strong>Perhatian:</strong> {errorMessage}
           </div>
         )}
 
@@ -149,16 +260,30 @@ export default function PatientAppointmentsPage() {
                   className="appointmentInput"
                   type="date"
                   value={date}
-                  min={today || undefined}
+                  min={minDate || undefined}
                   onChange={(event) => {
-                    setDate(event.target.value);
-                    setSubmitted(false);
+                    const chosenDate = event.target.value;
+                    setSavedQueue(null);
+
+                    if (minDate && chosenDate && chosenDate < minDate) {
+                      setDate("");
+                      setErrorMessage(
+                        isClosedToday
+                          ? "Jam operasional hari ini sudah tutup (pukul 20.00 WIB). Silakan pilih tanggal mulai besok."
+                          : "Tanggal kunjungan tidak boleh sebelum hari ini.",
+                      );
+                      return;
+                    }
+
+                    setDate(chosenDate);
+                    setErrorMessage("");
                   }}
                   required
                 />
                 <span className="appointmentHelpText">
-                  Tanggal yang dipilih belum menjamin ketersediaan jadwal.
-                  Petugas perlu mengonfirmasi reservasi Anda.
+                  {isClosedToday
+                    ? "Klinik sudah tutup untuk hari ini (lewat pukul 20.00 WIB). Pilihan tanggal dibuka mulai besok."
+                    : "Tanggal yang dipilih belum menjamin ketersediaan jadwal. Petugas perlu mengonfirmasi reservasi Anda."}
                 </span>
               </div>
             </section>
@@ -185,7 +310,8 @@ export default function PatientAppointmentsPage() {
                   value={complaint}
                   onChange={(event) => {
                     setComplaint(event.target.value);
-                    setSubmitted(false);
+                    setSavedQueue(null);
+                    setErrorMessage("");
                   }}
                   placeholder="Contoh: gigi geraham terasa ngilu saat minum dingin..."
                   minLength={5}
@@ -226,7 +352,8 @@ export default function PatientAppointmentsPage() {
                       checked={type === item.value}
                       onChange={() => {
                         setType(item.value);
-                        setSubmitted(false);
+                        setSavedQueue(null);
+                        setErrorMessage("");
                       }}
                       required
                     />
@@ -251,7 +378,8 @@ export default function PatientAppointmentsPage() {
                       value={otherDetails}
                       onChange={(event) => {
                         setOtherDetails(event.target.value);
-                        setSubmitted(false);
+                        setSavedQueue(null);
+                        setErrorMessage("");
                       }}
                       placeholder={
                         type === "Pemeriksaan lainnya"
@@ -266,8 +394,18 @@ export default function PatientAppointmentsPage() {
               )}
             </section>
 
-            <button className="appointmentSubmit" type="submit">
-              Kirim Pengajuan Reservasi <span aria-hidden="true">→</span>
+            <button
+              className="appointmentSubmit"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? (
+                "Menyimpan Pengajuan..."
+              ) : (
+                <>
+                  Kirim Pengajuan Reservasi <span aria-hidden="true">→</span>
+                </>
+              )}
             </button>
 
             <p className="appointmentDisclaimer">
@@ -283,8 +421,13 @@ export default function PatientAppointmentsPage() {
               </div>
               <h3>Jam Operasional</h3>
               <p>
-                Silakan pilih tanggal kunjungan dan tunggu konfirmasi jadwal
-                dari klinik.
+                {isOpenNow === null
+                  ? "Memeriksa status operasional klinik..."
+                  : isOpenNow
+                    ? "Klinik sedang buka. Reservasi hari ini masih tersedia."
+                    : isClosedToday
+                      ? "Klinik sudah tutup untuk hari ini. Reservasi dibuka untuk besok dan hari berikutnya."
+                      : "Klinik belum buka (buka pukul 08.00 WIB). Reservasi untuk hari ini sudah dapat diajukan."}
               </p>
 
               <div className="appointmentHours">
