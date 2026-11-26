@@ -16,6 +16,7 @@ export default function LoginPage() {
 
   const [pesan, setPesan] = useState("");
   const [loading, setLoading] = useState(false);
+  const [lihatPassword, setLihatPassword] = useState(false);
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
@@ -24,6 +25,10 @@ export default function LoginPage() {
       ...data,
       [name]: value,
     }));
+
+    if (pesan) {
+      setPesan("");
+    }
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -53,32 +58,61 @@ export default function LoginPage() {
         return;
       }
 
-      // Mengambil role dari backend
+      // Mengambil role pengguna dari backend
       const role = String(
         data.user?.role ?? data.role ?? ""
       ).toUpperCase();
 
       // Menentukan dashboard berdasarkan role
+      let redirectUrl: string;
+
       switch (role) {
         case "ADMIN":
-          setPesan("Login admin berhasil!");
-          router.replace("/admin");
+          redirectUrl = "/admin";
           break;
 
         case "DOCTOR":
-          setPesan("Login dokter berhasil!");
-          router.replace("/doctor/dashboard");
+          redirectUrl = "/doctor/dashboard";
           break;
 
         case "PATIENT":
-          setPesan("Login pasien berhasil!");
-          router.replace("/dashboard");
+          redirectUrl = "/patient/dashboard";
           break;
 
         default:
           setPesan("Role pengguna tidak dikenali.");
-          break;
+          return;
       }
+
+      // Menyimpan informasi pengguna non-sensitif
+      // untuk kompatibilitas dengan frontend dari main
+      if (data.user) {
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            id: data.user.id,
+            username: data.user.username,
+            name: data.user.name,
+            role,
+          })
+        );
+      }
+
+      // Pesan berhasil login
+      setPesan(
+        data.message ||
+          "Login berhasil! Mengarahkan ke dashboard..."
+      );
+
+      // Mengosongkan form
+      setForm({
+        username: "",
+        password: "",
+      });
+
+      // Mengarahkan pengguna ke dashboard
+      router.replace(redirectUrl);
+      router.refresh();
 
     } catch {
       setPesan("Terjadi kesalahan koneksi ke server.");
@@ -103,6 +137,7 @@ export default function LoginPage() {
         {/* FORM LOGIN */}
         <form onSubmit={handleSubmit}>
 
+          {/* USERNAME */}
           <div className="form-group">
             <label htmlFor="username">Username</label>
 
@@ -118,19 +153,40 @@ export default function LoginPage() {
             />
           </div>
 
+          {/* PASSWORD */}
           <div className="form-group">
             <label htmlFor="password">Password</label>
 
-            <input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="Masukkan password"
-              value={form.password}
-              onChange={handleChange}
-              autoComplete="current-password"
-              required
-            />
+            <div className="password-wrapper">
+
+              <input
+                id="password"
+                name="password"
+                type={lihatPassword ? "text" : "password"}
+                placeholder="Masukkan password"
+                value={form.password}
+                onChange={handleChange}
+                autoComplete="current-password"
+                required
+              />
+
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() =>
+                  setLihatPassword((sebelumnya) => !sebelumnya)
+                }
+                aria-label={
+                  lihatPassword
+                    ? "Sembunyikan password"
+                    : "Lihat password"
+                }
+                aria-pressed={lihatPassword}
+              >
+                {lihatPassword ? "🙈" : "👁"}
+              </button>
+
+            </div>
           </div>
 
           {/* PESAN LOGIN */}

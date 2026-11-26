@@ -10,6 +10,7 @@
  */
 export type * from './models/User'
 export type * from './models/Dokter'
+export type * from './models/JadwalDokter'
 export type * from './models/Pasien'
 export type * from './models/Antrian'
 export type * from './models/Pemeriksaan'

@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type StatusAntrean =
   | "Menunggu"
@@ -11,100 +10,14 @@ type StatusAntrean =
   | "Batal";
 
 type Laporan = {
-  id: number;
+  id: string;
   nomor: string;
   nama: string;
   layanan: string;
+  dokter: string;
   tanggal: string;
   status: StatusAntrean;
 };
-
-// Sistem hanya memiliki satu dokter gigi.
-// Ganti nama ini dengan nama dokter yang sebenarnya.
-const NAMA_DOKTER = "drg. Siti";
-
-const DATA_LAPORAN: Laporan[] = [
-  {
-    id: 1,
-    nomor: "A001",
-    nama: "Andi Saputra",
-    layanan: "Pemeriksaan Gigi",
-    tanggal: "2026-11-10",
-    status: "Selesai",
-  },
-  {
-    id: 2,
-    nomor: "A002",
-    nama: "Siti Rahma",
-    layanan: "Pembersihan Karang Gigi",
-    tanggal: "2026-11-10",
-    status: "Selesai",
-  },
-  {
-    id: 3,
-    nomor: "A003",
-    nama: "Budi Santoso",
-    layanan: "Tambal Gigi",
-    tanggal: "2026-11-10",
-    status: "Batal",
-  },
-  {
-    id: 4,
-    nomor: "A004",
-    nama: "Dewi Anggraini",
-    layanan: "Pemeriksaan Gigi",
-    tanggal: "2026-11-11",
-    status: "Selesai",
-  },
-  {
-    id: 5,
-    nomor: "A005",
-    nama: "Rizky Pratama",
-    layanan: "Cabut Gigi",
-    tanggal: "2026-11-11",
-    status: "Menunggu",
-  },
-  {
-    id: 6,
-    nomor: "A006",
-    nama: "Nadia Putri",
-    layanan: "Pembersihan Karang Gigi",
-    tanggal: "2026-11-11",
-    status: "Dalam Pemeriksaan",
-  },
-  {
-    id: 7,
-    nomor: "A007",
-    nama: "Fajar Hidayat",
-    layanan: "Tambal Gigi",
-    tanggal: "2026-11-12",
-    status: "Selesai",
-  },
-  {
-    id: 8,
-    nomor: "A008",
-    nama: "Maya Lestari",
-    layanan: "Pemeriksaan Gigi",
-    tanggal: "2026-11-12",
-    status: "Dipanggil",
-  },
-  {
-    id: 9,
-    nomor: "A009",
-    nama: "Agus Setiawan",
-    layanan: "Cabut Gigi",
-    tanggal: "2026-11-12",
-    status: "Menunggu",
-  },
-  {
-    id: 10,
-    nomor: "A010",
-    nama: "Rina Amelia",
-    layanan: "Tambal Gigi",
-    tanggal: "2026-11-12",
-    status: "Selesai",
-  },
-];
 
 const DAFTAR_STATUS = [
   "Semua Status",
@@ -114,6 +27,24 @@ const DAFTAR_STATUS = [
   "Selesai",
   "Batal",
 ];
+
+function getDefaultDateRangeJakarta() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Jakarta",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+
+  const values = Object.fromEntries(
+    parts.map((part) => [part.type, part.value]),
+  );
+
+  return {
+    mulai: `${values.year}-${values.month}-01`,
+    selesai: `${values.year}-${values.month}-${values.day}`,
+  };
+}
 
 function formatTanggal(tanggal: string) {
   return new Date(`${tanggal}T00:00:00`).toLocaleDateString("id-ID", {
@@ -141,46 +72,101 @@ function statusWarna(status: StatusAntrean) {
 }
 
 export default function AdminReportsPage() {
-  const [tanggalMulai, setTanggalMulai] = useState("2026-11-10");
-  const [tanggalSelesai, setTanggalSelesai] = useState("2026-11-12");
+  const [laporan, setLaporan] = useState<Laporan[]>([]);
+  const [namaDokter, setNamaDokter] = useState("drg. Siti");
+  const [loading, setLoading] = useState(true);
+  const [errorPesan, setErrorPesan] = useState("");
+
+  const [tanggalMulai, setTanggalMulai] = useState("");
+  const [tanggalSelesai, setTanggalSelesai] = useState("");
   const [filterStatus, setFilterStatus] = useState("Semua Status");
 
+  useEffect(() => {
+    const range = getDefaultDateRangeJakarta();
+    setTanggalMulai(range.mulai);
+    setTanggalSelesai(range.selesai);
+  }, []);
+
+  const ambilDataLaporan = useCallback(
+    async (mulai: string, selesai: string) => {
+      if (!mulai || !selesai) return;
+
+      if (mulai > selesai) {
+        setLaporan([]);
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      setErrorPesan("");
+
+      try {
+        const params = new URLSearchParams({
+          tanggalMulai: mulai,
+          tanggalSelesai: selesai,
+        });
+
+        const response = await fetch(
+          `/api/admin/reports?${params.toString()}`,
+          {
+            cache: "no-store",
+          },
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          setErrorPesan(data.message || "Gagal memuat data laporan.");
+          setLaporan([]);
+          return;
+        }
+
+        setLaporan(data.reports ?? []);
+        if (data.doctorName) {
+          setNamaDokter(data.doctorName);
+        }
+      } catch {
+        setErrorPesan("Terjadi kesalahan koneksi ke server.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (tanggalMulai && tanggalSelesai) {
+      ambilDataLaporan(tanggalMulai, tanggalSelesai);
+    }
+  }, [tanggalMulai, tanggalSelesai, ambilDataLaporan]);
+
   const dataFilter = useMemo(() => {
-    if (tanggalMulai > tanggalSelesai) {
+    if (!tanggalMulai || !tanggalSelesai || tanggalMulai > tanggalSelesai) {
       return [];
     }
 
-    return DATA_LAPORAN.filter((item) => {
-      const sesuaiTanggal =
-        item.tanggal >= tanggalMulai &&
-        item.tanggal <= tanggalSelesai;
-
-      const sesuaiStatus =
-        filterStatus === "Semua Status" ||
-        item.status === filterStatus;
-
-      return sesuaiTanggal && sesuaiStatus;
+    return laporan.filter((item) => {
+      return filterStatus === "Semua Status" || item.status === filterStatus;
     });
-  }, [tanggalMulai, tanggalSelesai, filterStatus]);
+  }, [laporan, tanggalMulai, tanggalSelesai, filterStatus]);
 
   const totalPasien = dataFilter.length;
 
   const totalSelesai = dataFilter.filter(
-    (item) => item.status === "Selesai"
+    (item) => item.status === "Selesai",
   ).length;
 
   const totalMenunggu = dataFilter.filter(
-    (item) => item.status === "Menunggu"
+    (item) => item.status === "Menunggu",
   ).length;
 
   const totalBatal = dataFilter.filter(
-    (item) => item.status === "Batal"
+    (item) => item.status === "Batal",
   ).length;
 
   const totalProses = dataFilter.filter(
     (item) =>
-      item.status === "Dipanggil" ||
-      item.status === "Dalam Pemeriksaan"
+      item.status === "Dipanggil" || item.status === "Dalam Pemeriksaan",
   ).length;
 
   const dataHarian = useMemo(() => {
@@ -222,9 +208,7 @@ export default function AdminReportsPage() {
       }
     });
 
-    return Object.entries(kelompok).sort(([a], [b]) =>
-      a.localeCompare(b)
-    );
+    return Object.entries(kelompok).sort(([a], [b]) => a.localeCompare(b));
   }, [dataFilter]);
 
   function exportCSV() {
@@ -240,14 +224,13 @@ export default function AdminReportsPage() {
     const rows = dataFilter.map((item) => [
       item.nomor,
       item.nama,
-      NAMA_DOKTER,
+      item.dokter || namaDokter,
       item.layanan,
       item.tanggal,
       item.status,
     ]);
 
-    const escapeCSV = (value: string) =>
-      `"${value.replace(/"/g, '""')}"`;
+    const escapeCSV = (value: string) => `"${value.replace(/"/g, '""')}"`;
 
     const isiCSV = [header, ...rows]
       .map((row) => row.map((value) => escapeCSV(String(value))).join(","))
@@ -261,7 +244,7 @@ export default function AdminReportsPage() {
     const link = document.createElement("a");
 
     link.href = url;
-    link.download = "laporan-antrean-poli-gigi.csv";
+    link.download = `laporan-antrean-${tanggalMulai}-sd-${tanggalSelesai}.csv`;
     link.click();
 
     URL.revokeObjectURL(url);
@@ -269,7 +252,7 @@ export default function AdminReportsPage() {
 
   const jumlahMaksimal = Math.max(
     ...dataHarian.map(([, data]) => data.total),
-    1
+    1,
   );
 
   return (
@@ -277,9 +260,7 @@ export default function AdminReportsPage() {
       {/* Header */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">
-            Laporan Antrean
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-800">Laporan Antrean</h1>
           <p className="mt-1 text-sm text-gray-500">
             Rekapitulasi pelayanan pasien poli gigi.
           </p>
@@ -287,30 +268,36 @@ export default function AdminReportsPage() {
 
         <button
           onClick={exportCSV}
-          disabled={dataFilter.length === 0}
+          disabled={loading || dataFilter.length === 0}
           className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
         >
           Export CSV
         </button>
       </div>
 
+      {/* Notifikasi Error */}
+      {errorPesan && (
+        <div
+          role="alert"
+          className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
+        >
+          {errorPesan}
+        </div>
+      )}
+
       {/* Informasi dokter */}
       <div className="rounded-xl border border-blue-100 bg-blue-50 p-4">
         <p className="text-sm text-blue-600">Dokter Gigi</p>
-        <p className="mt-1 font-semibold text-blue-900">
-          {NAMA_DOKTER}
-        </p>
+        <p className="mt-1 font-semibold text-blue-900">{namaDokter}</p>
         <p className="mt-1 text-xs text-blue-700">
-          Seluruh pelayanan dan laporan antrean ditangani oleh satu dokter
-          gigi.
+          Seluruh pelayanan dan laporan antrean ditangani oleh dokter gigi
+          terdaftar.
         </p>
       </div>
 
       {/* Filter */}
       <div className="rounded-xl border border-gray-200 bg-white p-5">
-        <h2 className="mb-4 font-semibold text-gray-800">
-          Filter Laporan
-        </h2>
+        <h2 className="mb-4 font-semibold text-gray-800">Filter Laporan</h2>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div>
@@ -355,7 +342,7 @@ export default function AdminReportsPage() {
           </div>
         </div>
 
-        {tanggalMulai > tanggalSelesai && (
+        {tanggalMulai && tanggalSelesai && tanggalMulai > tanggalSelesai && (
           <p className="mt-3 text-sm text-red-600">
             Tanggal mulai tidak boleh melebihi tanggal selesai.
           </p>
@@ -367,28 +354,28 @@ export default function AdminReportsPage() {
         <div className="rounded-xl border border-gray-200 bg-white p-5">
           <p className="text-sm text-gray-500">Total Pasien</p>
           <p className="mt-2 text-3xl font-bold text-gray-800">
-            {totalPasien}
+            {loading ? "..." : totalPasien}
           </p>
         </div>
 
         <div className="rounded-xl border border-gray-200 bg-white p-5">
           <p className="text-sm text-gray-500">Selesai</p>
           <p className="mt-2 text-3xl font-bold text-green-600">
-            {totalSelesai}
+            {loading ? "..." : totalSelesai}
           </p>
         </div>
 
         <div className="rounded-xl border border-gray-200 bg-white p-5">
           <p className="text-sm text-gray-500">Menunggu</p>
           <p className="mt-2 text-3xl font-bold text-yellow-600">
-            {totalMenunggu}
+            {loading ? "..." : totalMenunggu}
           </p>
         </div>
 
         <div className="rounded-xl border border-gray-200 bg-white p-5">
           <p className="text-sm text-gray-500">Dibatalkan</p>
           <p className="mt-2 text-3xl font-bold text-red-600">
-            {totalBatal}
+            {loading ? "..." : totalBatal}
           </p>
         </div>
       </div>
@@ -403,7 +390,11 @@ export default function AdminReportsPage() {
         </p>
 
         <div className="mt-5 space-y-5">
-          {dataHarian.length === 0 ? (
+          {loading ? (
+            <p className="py-6 text-center text-sm text-gray-500">
+              Memuat grafik laporan...
+            </p>
+          ) : dataHarian.length === 0 ? (
             <p className="py-6 text-center text-sm text-gray-500">
               Tidak ada data untuk ditampilkan.
             </p>
@@ -414,9 +405,7 @@ export default function AdminReportsPage() {
                   <span className="font-medium text-gray-700">
                     {formatTanggal(tanggal)}
                   </span>
-                  <span className="text-gray-500">
-                    {data.total} pasien
-                  </span>
+                  <span className="text-gray-500">{data.total} pasien</span>
                 </div>
 
                 <div className="flex h-5 w-full overflow-hidden rounded-full bg-gray-100">
@@ -475,11 +464,9 @@ export default function AdminReportsPage() {
       {/* Tabel laporan */}
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
         <div className="border-b border-gray-200 p-5">
-          <h2 className="font-semibold text-gray-800">
-            Detail Laporan Pasien
-          </h2>
+          <h2 className="font-semibold text-gray-800">Detail Laporan Pasien</h2>
           <p className="mt-1 text-sm text-gray-500">
-            Data pelayanan oleh {NAMA_DOKTER}.
+            Data pelayanan oleh {namaDokter}.
           </p>
         </div>
 
@@ -487,26 +474,25 @@ export default function AdminReportsPage() {
           <table className="w-full text-left text-sm">
             <thead className="bg-gray-50 text-gray-600">
               <tr>
-                <th className="px-5 py-3 font-semibold">
-                  No. Antrean
-                </th>
-                <th className="px-5 py-3 font-semibold">
-                  Nama Pasien
-                </th>
-                <th className="px-5 py-3 font-semibold">
-                  Layanan
-                </th>
-                <th className="px-5 py-3 font-semibold">
-                  Tanggal
-                </th>
-                <th className="px-5 py-3 font-semibold">
-                  Status
-                </th>
+                <th className="px-5 py-3 font-semibold">No. Antrean</th>
+                <th className="px-5 py-3 font-semibold">Nama Pasien</th>
+                <th className="px-5 py-3 font-semibold">Layanan</th>
+                <th className="px-5 py-3 font-semibold">Tanggal</th>
+                <th className="px-5 py-3 font-semibold">Status</th>
               </tr>
             </thead>
 
             <tbody className="divide-y divide-gray-100">
-              {dataFilter.length === 0 ? (
+              {loading ? (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="px-5 py-10 text-center text-gray-500"
+                  >
+                    Memuat data laporan dari database...
+                  </td>
+                </tr>
+              ) : dataFilter.length === 0 ? (
                 <tr>
                   <td
                     colSpan={5}
@@ -533,7 +519,7 @@ export default function AdminReportsPage() {
                     <td className="whitespace-nowrap px-5 py-4">
                       <span
                         className={`rounded-full px-3 py-1 text-xs font-medium ${statusWarna(
-                          item.status
+                          item.status,
                         )}`}
                       >
                         {item.status}
