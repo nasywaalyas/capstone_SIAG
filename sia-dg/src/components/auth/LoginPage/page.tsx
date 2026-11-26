@@ -76,7 +76,7 @@ export default function LoginPage() {
           break;
 
         case "PATIENT":
-          redirectUrl = "/patient/dashboard";
+          redirectUrl = "/dashboard";
           break;
 
         default:
