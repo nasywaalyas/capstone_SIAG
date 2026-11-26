@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -32,6 +33,7 @@ export default function LoginPage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
     setLoading(true);
     setPesan("");
 
@@ -41,29 +43,77 @@ export default function LoginPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(form),
+        credentials: "same-origin",
+        body: JSON.stringify({
+          username: form.username.trim(),
+          password: form.password,
+        }),
       });
 
       const data = await response.json();
 
+      // Jika login gagal
       if (!response.ok) {
-        setPesan(data.message || "Gagal melakukan login.");
+        setPesan(data.message || "Username atau password salah.");
         return;
       }
 
-      setPesan(data.message || "Login berhasil! Mengarahkan ke dashboard...");
+      // Mengambil role pengguna dari backend
+      const role = String(
+        data.user?.role ?? data.role ?? ""
+      ).toUpperCase();
 
-      if (data.user) {
-        localStorage.setItem("user", JSON.stringify(data.user));
+      // Menentukan dashboard berdasarkan role
+      let redirectUrl: string;
+
+      switch (role) {
+        case "ADMIN":
+          redirectUrl = "/admin";
+          break;
+
+        case "DOCTOR":
+          redirectUrl = "/doctor/dashboard";
+          break;
+
+        case "PATIENT":
+          redirectUrl = "/dashboard";
+          break;
+
+        default:
+          setPesan("Role pengguna tidak dikenali.");
+          return;
       }
 
+      // Menyimpan informasi pengguna non-sensitif
+      // untuk kompatibilitas dengan frontend dari main
+      if (data.user) {
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            id: data.user.id,
+            username: data.user.username,
+            name: data.user.name,
+            role,
+          })
+        );
+      }
+
+      // Pesan berhasil login
+      setPesan(
+        data.message ||
+          "Login berhasil! Mengarahkan ke dashboard..."
+      );
+
+      // Mengosongkan form
       setForm({
         username: "",
         password: "",
       });
 
-      router.push(data.redirectUrl || "/patient/dashboard");
+      // Mengarahkan pengguna ke dashboard
+      router.replace(redirectUrl);
       router.refresh();
+
     } catch {
       setPesan("Terjadi kesalahan koneksi ke server.");
     } finally {
@@ -74,15 +124,20 @@ export default function LoginPage() {
   return (
     <main className="register-page">
       <section className="register-card">
+
+        {/* HEADER LOGIN */}
         <div className="register-heading">
           <div className="register-icon">✚</div>
 
-          <h1>Login Sistem</h1>
+          <h1>Login SIAG</h1>
 
           <p>Sistem Informasi Antrean Poli Gigi</p>
         </div>
 
+        {/* FORM LOGIN */}
         <form onSubmit={handleSubmit}>
+
+          {/* USERNAME */}
           <div className="form-group">
             <label htmlFor="username">Username</label>
 
@@ -98,10 +153,12 @@ export default function LoginPage() {
             />
           </div>
 
+          {/* PASSWORD */}
           <div className="form-group">
             <label htmlFor="password">Password</label>
 
             <div className="password-wrapper">
+
               <input
                 id="password"
                 name="password"
@@ -116,32 +173,48 @@ export default function LoginPage() {
               <button
                 type="button"
                 className="password-toggle"
-                onClick={() => setLihatPassword((sebelumnya) => !sebelumnya)}
+                onClick={() =>
+                  setLihatPassword((sebelumnya) => !sebelumnya)
+                }
                 aria-label={
-                  lihatPassword ? "Sembunyikan password" : "Lihat password"
+                  lihatPassword
+                    ? "Sembunyikan password"
+                    : "Lihat password"
                 }
                 aria-pressed={lihatPassword}
               >
                 {lihatPassword ? "🙈" : "👁"}
               </button>
+
             </div>
           </div>
 
+          {/* PESAN LOGIN */}
           {pesan && (
             <p className="register-message" role="status">
               {pesan}
             </p>
           )}
 
-          <button type="submit" className="register-button" disabled={loading}>
+          {/* TOMBOL LOGIN */}
+          <button
+            type="submit"
+            className="register-button"
+            disabled={loading}
+          >
             {loading ? "Memproses..." : "Login"}
           </button>
+
         </form>
 
+        {/* REGISTRASI KHUSUS PASIEN */}
         <p className="register-footer">
           Belum mempunyai akun?{" "}
-          <Link href="/auth/register">Daftar sebagai Pasien</Link>
+          <Link href="/auth/register">
+            Daftar sebagai Pasien
+          </Link>
         </p>
+
       </section>
     </main>
   );
