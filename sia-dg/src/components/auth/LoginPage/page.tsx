@@ -1,12 +1,13 @@
+
 "use client";
 
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // Import useRouter untuk navigasi
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const router = useRouter(); // Inisialisasi router
+  const router = useRouter();
 
   const [form, setForm] = useState({
     username: "",
@@ -14,7 +15,7 @@ export default function LoginPage() {
   });
 
   const [pesan, setPesan] = useState("");
-  const [loading, setLoading] = useState(false); // State untuk tombol loading
+  const [loading, setLoading] = useState(false);
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
@@ -27,33 +28,58 @@ export default function LoginPage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
     setLoading(true);
     setPesan("");
 
     try {
-      // Memanggil API login
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(form),
+        credentials: "same-origin",
+        body: JSON.stringify({
+          username: form.username.trim(),
+          password: form.password,
+        }),
       });
 
       const data = await response.json();
 
+      // Jika login gagal
       if (!response.ok) {
-        // Jika gagal (contoh: username/password salah)
-        setPesan(data.message || "Gagal melakukan login.");
-      } else {
-        // Jika sukses
-        setPesan("Login berhasil! Mengarahkan ke dashboard...");
-
-        // Pindah ke halaman dashboard
-        // Gunakan data.redirectUrl jika Anda ingin arahannya dinamis sesuai Role (dari API)
-        // Atau ketik "/dashboard" jika Anda hanya punya 1 halaman dashboard general
-        router.push("/dashboard");
+        setPesan(data.message || "Username atau password salah.");
+        return;
       }
+
+      // Mengambil role dari backend
+      const role = String(
+        data.user?.role ?? data.role ?? ""
+      ).toUpperCase();
+
+      // Menentukan dashboard berdasarkan role
+      switch (role) {
+        case "ADMIN":
+          setPesan("Login admin berhasil!");
+          router.replace("/admin");
+          break;
+
+        case "DOCTOR":
+          setPesan("Login dokter berhasil!");
+          router.replace("/doctor/dashboard");
+          break;
+
+        case "PATIENT":
+          setPesan("Login pasien berhasil!");
+          router.replace("/dashboard");
+          break;
+
+        default:
+          setPesan("Role pengguna tidak dikenali.");
+          break;
+      }
+
     } catch {
       setPesan("Terjadi kesalahan koneksi ke server.");
     } finally {
@@ -64,15 +90,19 @@ export default function LoginPage() {
   return (
     <main className="register-page">
       <section className="register-card">
+
+        {/* HEADER LOGIN */}
         <div className="register-heading">
           <div className="register-icon">✚</div>
 
-          <h1>Login Pasien</h1>
+          <h1>Login SIAG</h1>
 
           <p>Sistem Informasi Antrean Poli Gigi</p>
         </div>
 
+        {/* FORM LOGIN */}
         <form onSubmit={handleSubmit}>
+
           <div className="form-group">
             <label htmlFor="username">Username</label>
 
@@ -103,21 +133,32 @@ export default function LoginPage() {
             />
           </div>
 
+          {/* PESAN LOGIN */}
           {pesan && (
             <p className="register-message" role="status">
               {pesan}
             </p>
           )}
 
-          <button type="submit" className="register-button" disabled={loading}>
+          {/* TOMBOL LOGIN */}
+          <button
+            type="submit"
+            className="register-button"
+            disabled={loading}
+          >
             {loading ? "Memproses..." : "Login"}
           </button>
+
         </form>
 
+        {/* REGISTRASI KHUSUS PASIEN */}
         <p className="register-footer">
           Belum mempunyai akun?{" "}
-          <Link href={"/auth/register"}>Daftar sebagai Pasien</Link>
+          <Link href="/auth/register">
+            Daftar sebagai Pasien
+          </Link>
         </p>
+
       </section>
     </main>
   );

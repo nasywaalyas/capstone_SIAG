@@ -1,0 +1,11 @@
+"use client";
+import { useState } from "react";
+import { useDoctor } from "@/features/doctors/DoctorProvider";
+import { PageHeading, Panel, field, formatDate } from "@/features/doctors/ui";
+export default function HistoryPage() {
+  const { examinations, patients } = useDoctor();
+  const [patientId, setPatientId] = useState("");
+  const [search, setSearch] = useState("");
+  const records = examinations.filter(e => (!patientId || e.patientId === patientId) && `${patients.find(p => p.id === e.patientId)?.name ?? ""} ${e.diagnosis} ${e.treatment}`.toLowerCase().includes(search.trim().toLowerCase())).sort((a,b) => b.examinedAt.localeCompare(a.examinedAt));
+  return <><PageHeading title="Riwayat Pemeriksaan" description="Telusuri catatan pemeriksaan pasien yang telah selesai."/><Panel><div className="mb-5 grid gap-3 sm:grid-cols-2"><label className="text-sm font-medium">Pasien<select className={`${field} mt-1`} value={patientId} onChange={e => setPatientId(e.target.value)}><option value="">Semua pasien</option>{patients.map(p => <option key={p.id} value={p.id}>{p.name} ({p.medicalNumber})</option>)}</select></label><label className="text-sm font-medium">Pencarian<input className={`${field} mt-1`} placeholder="Nama, diagnosis, atau tindakan" value={search} onChange={e => setSearch(e.target.value)}/></label></div><div className="space-y-3">{records.map(e => { const patient = patients.find(p => p.id === e.patientId); return <details key={e.id} className="rounded-lg border border-slate-200 p-4"><summary className="cursor-pointer"><span className="font-semibold">{patient?.name ?? "Pasien"}</span><span className="ml-3 text-sm text-slate-500">{formatDate(e.examinedAt)}</span><p className="mt-1 text-sm text-teal-800">{e.diagnosis}</p></summary><dl className="mt-4 grid gap-3 border-t border-slate-100 pt-4 text-sm sm:grid-cols-2">{[["No. rekam medis", patient?.medicalNumber ?? "-"], ["Keluhan", e.complaint], ["Hasil pemeriksaan", e.findings], ["Diagnosis", e.diagnosis], ["Tindakan", e.treatment], ["Catatan", e.notes || "-"]].map(([k,v]) => <div key={k}><dt className="font-medium text-slate-500">{k}</dt><dd className="mt-1 whitespace-pre-wrap break-words">{v}</dd></div>)}</dl></details>; })}{!records.length && <p className="py-8 text-center text-sm text-slate-500">Tidak ada riwayat pemeriksaan.</p>}</div></Panel></>;
+}
